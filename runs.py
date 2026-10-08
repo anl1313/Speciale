@@ -10,7 +10,7 @@ eps = 1e-6
 def run(rep, R = 500, seed = 90, n_jobs=-1, **kw):
     """
     args:
-    rep (int): repetition number
+    rep: replication function
     R (int): number of repetitions
     seed (int): random seed
     n_jobs (int): number of parallel jobs

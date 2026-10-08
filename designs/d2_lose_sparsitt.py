@@ -30,7 +30,7 @@ def design_d2(N_grid=(250, 500, 1000, 2000),
     """
     # 1. initialize an empty list to store results
     out = []
-    # a. loop over sample sizes in N_grid
+    # 2. loop over sample sizes in N_grid
     for N in N_grid:
         p = int(ratio * N)
         for par in pars:

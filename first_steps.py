@@ -235,9 +235,10 @@ def logit_mle(Q, d):
     return (lambda Z: m.predict_proba(s(Z))[:, 1]), Q.shape[1]
 
 
-def const(y):
+def const(Q,y):
     """
     args:
+    Q: (n x p) input matrix
     y: response variable
 
     output: 
