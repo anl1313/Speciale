@@ -1,6 +1,7 @@
 import numpy as np
 import runs as runs
 import diagnostics as diag
+import DGP as dgp
 import pandas as pd
 
 def design_d2(N_grid=(250, 500, 1000, 2000), 
@@ -30,16 +31,19 @@ def design_d2(N_grid=(250, 500, 1000, 2000),
     """
     # 1. initialize an empty list to store results
     out = []
-    # 2. loop over sample sizes in N_grid
+    # 2. loop over sample sizes
     for N in N_grid:
+        # i. determine p based on the ratio and N
         p = int(ratio * N)
+        # ii. loop over the parameters
         for par in pars:
             q = par if shape == "decay" else (p if par >= 1 else int(np.clip(np.ceil(N ** par), 
                                                                              2, p)))
             sup = None if shape == "decay" else np.arange(q)
+            # iii. loop over the cosines. 
             for c in cos:
-                g, d = diag.coefs(p, shape, q, c)
-                df = runs.run(diag.gauss_rep, 
+                g, d = dgp.coefs(p, shape, q, c)
+                df = runs.run(dgp.gauss_rep, 
                               R, 
                               N = N, 
                               gamma = g, 
@@ -51,5 +55,5 @@ def design_d2(N_grid=(250, 500, 1000, 2000),
                                      shape=shape, 
                                      par=par,
                                      cos = c, 
-                                     naive = diag.naive_bias(g, d)))
+                                     naive = dgp.naive_bias(g, d)))
     return pd.concat(out)
