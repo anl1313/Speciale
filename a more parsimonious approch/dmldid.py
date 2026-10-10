@@ -6,11 +6,13 @@ from sklearn.linear_model import (Lasso, LassoCV, LinearRegression, LogisticRegr
                                   LogisticRegressionCV, RidgeCV)
 from sklearn.model_selection import KFold
 
+
 warnings.filterwarnings('ignore')
 eps = 1e-6  # propensity clip
 
-# unpenalized / tuned-by-CV fits: MODELS[method][binary]
-MODELS = {'ols':   (LinearRegression,
+# 1. model dictionary 
+# unpenalized / tuned-by-CV fits: models_[method][binary]
+models_ = {'ols':   (LinearRegression,
                     lambda: LogisticRegression(C=1e4, max_iter=5000)),
           'cv':    (lambda: LassoCV(cv=5),
                     lambda: LogisticRegressionCV(Cs=10, cv=5, penalty='l1', solver='liblinear',
@@ -18,11 +20,11 @@ MODELS = {'ols':   (LinearRegression,
           'ridge': (lambda: RidgeCV(alphas=np.logspace(-2, 5, 30)),
                     lambda: LogisticRegressionCV(Cs=10, cv=5, scoring='neg_log_loss', max_iter=2000))}
 
-
+# 2. link function
 def G(z):
-    return 1. / (1. + np.exp(-z))
+    return 1.0 / (1.0 + np.exp(-z))
 
-
+# 3. standardizer 
 def standardize(Q):
     mu, sd = Q.mean(0), Q.std(0)
     sd[sd < 1e-12] = np.inf  # constant columns -> 0
@@ -57,7 +59,7 @@ def first_step(Q, y, binary, method='bcch', c=1.1, alpha=0.05, loadings=True):
         if len(S) == 0:
             return lambda Z: np.full(len(Z), y.mean()), 0
         method = 'ols'
-    m = MODELS[method][binary]().fit(X[:, S], y)
+    m = models_[method][binary]().fit(X[:, S], y)
     predict = (lambda Z: m.predict_proba(s(Z)[:, S])[:, 1]) if binary else (lambda Z: m.predict(s(Z)[:, S]))
     return predict, int(np.sum(m.coef_ != 0))
 

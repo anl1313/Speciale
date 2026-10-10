@@ -21,10 +21,28 @@ def lemma4(f, t):
 
 
 def prop10(D, dY, fa, f0, folds):
+    """
+    args: 
+    D (array): treatment assignment info
+    dY (array): Y(1) - Y(0)
+    fa (dict): fitted model with basis A
+    f0 (dict): fitted model with basis A0
+    folds (list): list of tuples containing train and test indices for cross-validation
+
+    output: dict with c1, c2, c3 values
+
+    description:
+    Function that computes the components of the decomposition in Proposition 10,
+    which quantifies the difference between the estimated treatment effect using 
+    basis A and the true treatment effect
+    """
     '''Prop. 10, exact: theta(A) - theta(A0) = c1 (propensity) + c2 (outcome) + c3 (cross).'''
-    dg, dl = fa['ghat'] - f0['ghat'], fa['ellhat'] - f0['ellhat']
-    v = (1 - fa['ghat']) * (1 - f0['ghat'])
-    c = (-(1 - D) * dg / v * (dY - f0['ellhat']),
+    # delta g and delta ell
+    dg = fa['ghat'] - f0['ghat'] 
+    dl = fa['ellhat'] - f0['ellhat']
+    # compute c1, c2, c3 as averages over folds
+    v = (1 - fa['ghat']) * (1 - f0['ghat']) # denominator
+    c = (-(1 - D)*dg / v * (dY - f0['ellhat']), 
          -(D - f0['ghat']) / (1 - f0['ghat']) * dl,
          (1 - D) * dg / v * dl)
     return {f'c{j + 1}': np.mean([(cj / f0['phat'])[k].mean() for _, k in folds]) for j, cj in enumerate(c)}
