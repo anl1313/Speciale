@@ -95,6 +95,8 @@ def summary(df, by=('est',)):
     out = pd.DataFrame(dict(n=g.theta.count(), bias=g.err.mean(), sd=g.theta.std(),
                             rmse=g.err.apply(l2), cover=g.cover.mean(), se_sd=g.se.mean() / g.theta.std()))
     out['bias_sd'] = out.bias / out.sd
+    out['med_bias'] = g.err.median()
+    out['sd_rob'] = g.theta.apply(lambda t: (t.quantile(.75) - t.quantile(.25)) / 1.349)
     extra = [c for c in ('naive', 'B1', 'err_g', 'err_l', 'nsel_g', 'nsel_l', 'kappa', 'c1', 'c2', 'c3') if c in d]
     return out.join(g[extra].mean())
 
