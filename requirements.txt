@@ -1,0 +1,9 @@
+# Versions used for the final run are recorded per run in results/<design>/<cell>/runs.jsonl.
+numpy>=1.26
+scipy>=1.11
+scikit-learn>=1.3,<1.10   # penalty='l1' is removed in 1.10
+pandas>=2.0
+joblib>=1.3
+pyarrow>=14               # Parquet results store
+matplotlib>=3.7
+pytest>=7                 # pre-flight tests

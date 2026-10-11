@@ -1,3 +1,5 @@
+# Frozen copy of src/dmldid.py at commit eb4a308 (10 Oct), used only to test that the update changes nothing
+# beyond what it declares. Do not edit.
 import warnings
 import numpy as np
 from numpy import linalg as la
