@@ -9,7 +9,7 @@ def l2(f, axis=None):
     '''Sample analogue of ||f||_{P,2}.'''
     return np.sqrt(np.mean(f ** 2, axis=axis))
 
-
+# wrap each estimator in error handling with status field
 def lemma4(f, t):
     '''Lemma 4 on the test draw t: B1 and first-step errors, averaged over folds.'''
     gt, lt = np.clip(f['gt'], dd.eps, 1 - dd.eps), np.array(f['lt'])  # (K, n_test)
@@ -114,3 +114,4 @@ def slopes(s, group=('est', 'a', 'cos')):
     '''Slope of log|bias/sd| on log N (Prop. 7); decay path: about (1 - a)/(2a) for 1/2 < a < 1.'''
     s = s.reset_index()
     return s.groupby(list(group)).apply(lambda z: np.polyfit(np.log(z.N), np.log(abs(z.bias_sd)), 1)[0])
+

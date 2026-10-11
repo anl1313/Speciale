@@ -1,3 +1,4 @@
+from turtle import pd
 import warnings
 import numpy as np
 from numpy import linalg as la
@@ -15,8 +16,11 @@ eps = 1e-6  # propensity clip
 models_ = {'ols':   (LinearRegression,
                     lambda: LogisticRegression(C=1e4, max_iter=5000)),
           'cv':    (lambda: LassoCV(cv=5),
-                    lambda: LogisticRegressionCV(Cs=10, cv=5, penalty='l1', solver='liblinear',
-                                                 intercept_scaling=100, scoring='neg_log_loss')),
+                    lambda: LogisticRegressionCV(Cs=10, cv=5, penalty='l1', 
+                                                 solver='liblinear',
+                                                 intercept_scaling=100,
+                                                 scoring='neg_log_loss', 
+                                                 random_state=42)),
           'ridge': (lambda: RidgeCV(alphas=np.logspace(-2, 5, 30)),
                     lambda: LogisticRegressionCV(Cs=10, cv=5, scoring='neg_log_loss', max_iter=2000))}
 
@@ -53,7 +57,9 @@ def first_step(Q, y, binary, method='bcch', c=1.1, alpha=0.05, loadings=True):
     S = np.arange(p)
     if method == 'bcch':
         q = c * norm.ppf(1 - alpha / (2 * p)) / np.sqrt(n)
-        S = (np.flatnonzero(LogisticRegression(penalty='l1', C=2 / (n * q), solver='liblinear',
+        S = (np.flatnonzero(LogisticRegression(penalty='l1', C=2 / (n * q), 
+                                               solver='liblinear',
+                                               random_state=42,
                                                intercept_scaling=100).fit(X, y).coef_)
              if binary else bcch(X, y, q, loadings))
         if len(S) == 0:
@@ -140,3 +146,42 @@ def ordid(Q, D, dY):
     r0, r1, x1 = dY[D == 0] - X0 @ b, dY[D == 1] - X1 @ b, X1.mean(0)
     V = r0 @ r0 / (n0 - k) * la.pinv(X0.T @ X0)
     return dict(theta=r1.mean(), se=np.sqrt(r1.var(ddof=1) / len(r1) + x1 @ V @ x1))
+
+def fit_diagnostics(df, by=('est', 'basis')):
+    """
+    args:
+    df (dataframe): input dataframe with simulation results
+    by (tuple): columns to group by
+
+    output: pd.DataFrame with fit diagnostics
+
+    description:
+    Function that computes fit diagnostics for each group in the input dataframe.
+    """
+    #min/max ghat
+    min_ghat = df.groupby(list(by)).ghat.min()
+    max_ghat = df.groupby(list(by)).ghat.max()
+    # max absolute weight
+    max_abs_weight = df.groupby(
+        list(by)).apply(
+        lambda x: np.max(
+            np.abs(
+                (x.D - x.ghat) / (x.phat * (1 - x.ghat)))))
+    # condition number of the design
+    condition_number = df.groupby(list(by)).apply(
+        lambda x: np.linalg.cond(x.Q))
+    # convergence flags
+    convergence_flags = df.groupby(list(by)).apply(
+        lambda x: np.any(x.converged == False))
+    # captured warnings
+    captured_warnings = df.groupby(list(by)).apply(
+        lambda x: np.any(x.warning.notna()))
+    # combine all diagnostics into a single dataframe
+    diagnostics = pd.DataFrame({
+        'min_ghat': min_ghat,
+        'max_ghat': max_ghat,
+        'max_abs_weight': max_abs_weight,
+        'condition_number': condition_number,
+        'convergence_flags': convergence_flags,
+        'captured_warnings': captured_warnings})
+    return diagnostics
