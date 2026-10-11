@@ -1,0 +1,14 @@
+{
+  "design": "D1",
+  "cell": "0d53cca456",
+  "spec": {
+    "variant": "trend",
+    "N": 200,
+    "p": 100,
+    "K": 5,
+    "trend": true,
+    "sigma": 1.4832396974191326,
+    "sigma3": 0.1
+  },
+  "seed": 90
+}

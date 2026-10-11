@@ -1,0 +1,14 @@
+{
+  "design": "D1",
+  "cell": "c15b775746",
+  "spec": {
+    "variant": "chang",
+    "N": 200,
+    "p": 100,
+    "K": 2,
+    "trend": false,
+    "sigma": 0.1,
+    "sigma3": 0.1
+  },
+  "seed": 90
+}
