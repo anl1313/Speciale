@@ -1,0 +1,12 @@
+{
+  "design": "D5",
+  "cell": "a28b560e6c",
+  "spec": {
+    "N": 1000,
+    "J": 5,
+    "rule": "fixed",
+    "hit": "both",
+    "n_ref": 10
+  },
+  "seed": 90
+}
