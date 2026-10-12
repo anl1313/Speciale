@@ -37,7 +37,7 @@ def main(argv=None):
                                                  indent=2, default=str))
     pd.set_option('display.width', 200)
     print(f"Chang (2020), Table 2, DML-DiD (Lasso): {ap.TABLE2['dml_lasso'][0]} ({ap.TABLE2['dml_lasso'][1]})")
-    print(df[['step', 'description', 'theta', 'se', 'change', 'sd_splits', 'kept']].round(3).to_string(index=False))
+    print(df[['step', 'description', 'theta', 'se', 'change', 'sd_splits', 'kept', 'nwarn']].round(3).to_string(index=False))
     print('saved', out / f'{stem}.parquet')
 
 
