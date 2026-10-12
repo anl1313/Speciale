@@ -1,0 +1,11 @@
+{
+  "design": "D3",
+  "cell": "b11eb5dfcd",
+  "spec": {
+    "N": 1000,
+    "a": 0.5,
+    "cos": 0.0,
+    "ratio": 0.5
+  },
+  "seed": 90
+}

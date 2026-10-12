@@ -1,0 +1,12 @@
+{
+  "design": "D6",
+  "cell": "f69aa4dd97",
+  "spec": {
+    "N": 1000,
+    "J": 10,
+    "scale": 3.0,
+    "hit": "both",
+    "n_ref": 10
+  },
+  "seed": 90
+}

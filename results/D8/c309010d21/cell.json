@@ -1,0 +1,11 @@
+{
+  "design": "D8",
+  "cell": "c309010d21",
+  "spec": {
+    "D": "real",
+    "s": 5,
+    "seed_g": 1,
+    "seed_l": 2
+  },
+  "seed": 90
+}

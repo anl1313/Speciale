@@ -1,0 +1,12 @@
+{
+  "design": "D4",
+  "cell": "fe6123de49",
+  "spec": {
+    "N": 1000,
+    "p": 500,
+    "dense_g": true,
+    "dense_l": false,
+    "tau2": 0.8
+  },
+  "seed": 90
+}
