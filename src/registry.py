@@ -9,7 +9,8 @@ The grids reproduce the 10 Oct notebook (legacy/simulations_vol5_outputs.ipynb) 
     D5 refcat    reference-category coding; J fixed (5) vs growing (N/20); hit = g, l, both
     D6 overlap   D5 machinery, J = 10, propensity index scaled
     D7 centring  cubic dictionary centred at the mean, 0, 1, sample median, sample mean
-    D8 seq_rcs   repeated cross sections on Sequeira's covariates (real D), Chang's N = 1084 sample
+    D8 seq_rcs   repeated cross sections on Sequeira's covariates (real D), Chang's N = 1084 sample;
+                 second cell: Chang's replication-code trimming (band, band + score trim)
 '''
 from itertools import product
 from pathlib import Path
@@ -48,8 +49,8 @@ def cells(design):
         return [dict(N=1000, J=10, scale=s, hit='both', n_ref=10) for s in (.5, 1., 2., 3.)]
     if design == 'D7':
         return [dict(N=N) for N in (500, 1000, 2000, 4000)]
-    if design == 'D8':
-        return [dict(D='real', s=5, seed_g=1, seed_l=2)]
+    if design == 'D8':  # second cell: Chang's replication-code trimming, same data draws as the first
+        return [dict(D='real', s=5, seed_g=1, seed_l=2), dict(D='real', s=5, seed_g=1, seed_l=2, variant='chang_trim')]
     raise KeyError(design)
 
 
@@ -83,7 +84,11 @@ def build(design):
         Qs = {k: dgp.poly(X, c)[:, S] for k, c in (('A0', X.mean(0)), ('raw', 0.), ('median', np.median(X, 0)))}
         cg = dgp.sparse_coefs(Qs['A0'], spec['s'], seed=spec['seed_g'])
         cl = dgp.sparse_coefs(Qs['A0'], spec['s'], seed=spec['seed_l'])
-        return mc.replicate_rcs, dict(Qs=Qs, cg=cg, cl=cl, D=D if spec['D'] == 'real' else None, lam=lam), {}
+        methods = (('bcch_band', dict(method='bcch', trim=(.03, .97), lam_aux=True)),
+                   ('bcch_chang', dict(method='bcch', trim=(.03, .97), score_trim=True, lam_aux=True))) \
+            if spec.get('variant') == 'chang_trim' else ('bcch',)
+        return mc.replicate_rcs, dict(Qs=Qs, cg=cg, cl=cl, D=D if spec['D'] == 'real' else None, lam=lam,
+                                      methods=methods), {}
 
     return {'D1': gauss, 'D2': gauss, 'D3': gauss, 'D4': gauss, 'D5': cat, 'D6': cat, 'D7': centre,
             'D8': seq}[design]

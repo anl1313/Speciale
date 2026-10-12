@@ -51,3 +51,10 @@ def test_csv_export_does_not_overwrite(tmp_path):
     with pytest.raises(FileExistsError):
         store.export_csv('T', root=tmp_path)
     assert len(pd.read_csv(path)) > 0
+
+
+def test_existing_d8_cell_keeps_its_id():
+    '''Adding the trimming cell must not change the id of the stored D8 cell.'''
+    import registry
+    assert registry.cells('D8')[0] == dict(D='real', s=5, seed_g=1, seed_l=2)
+    assert store.cell_id(registry.cells('D8')[0], 90) == 'c309010d21'
