@@ -96,12 +96,13 @@ def replicate(rng, sim, bases, N, K=5, methods=('bcch',), n_test=5000, fs={},
     return rows + [_row(e, None, _call(bench[e]), method=e) for e in extras]
 
 
-def replicate_rcs(rng, Qs, cg, cl, D=None, lam=.5, sigma=1., K=5, method='bcch', fs={}):
-    '''D8: real covariates, dictionaries Qs = {name: Q} (first = A0, where cg, cl are sparse).'''
+def replicate_rcs(rng, Qs, cg, cl, D=None, lam=.5, sigma=1., K=5, methods=('bcch',), fs={}):
+    '''D8: real covariates, dictionaries Qs = {name: Q} (first = A0, where cg, cl are sparse). methods as in
+    replicate, e.g. ('bcch_chang', dict(method='bcch', trim=(.03, .97), score_trim=True, lam_aux=True)).'''
     d = sim_rcs(rng, next(iter(Qs.values())), cg, cl, D, lam, sigma)
     folds = dd.make_folds(len(d['D']), K, rng)
-    rows = [_row(method, b, _call(dd.dmldid_rcs, Q, d['D'], d['T'], d['Y'], folds, method, **fs), method=method)
-            for b, Q in Qs.items()]
+    rows = [_row(label, b, _call(dd.dmldid_rcs, Q, d['D'], d['T'], d['Y'], folds, **spec), method=spec['method'])
+            for label, spec in _specs(methods, fs).items() for b, Q in Qs.items()]
     m = [d['Y'][(d['D'] == i) & (d['T'] == j)].mean() for i in (1, 0) for j in (1, 0)]
     unadj = _call(lambda: dict(theta=m[0] - m[1] - m[2] + m[3], se=np.nan))
     return rows + [_row('unadjusted', None, unadj, method='unadjusted')]

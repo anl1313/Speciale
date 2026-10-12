@@ -175,24 +175,49 @@ def dmldid(Q, D, dY, folds, method='bcch', Qt=None, clip=eps, **fs):
         ghat=ghat, ellhat=ellhat, phat=phat, diag=_diag(graw, clip, w, ig, il))
 
 
-def dmldid_rcs(Q, D, T, Y, folds, method='bcch', clip=eps, **fs):
-    '''DML-DiD, repeated cross sections, eq. (6.2); G_lambda with the nuisances held fixed (unverified, see audit).'''
+def _cut(x, on):
+    '''Chang's score trimming (replication code only): keep values below |min|.'''
+    return x[x < abs(x.min())] if on else x
+
+
+def dmldid_rcs(Q, D, T, Y, folds, method='bcch', clip=eps, trim=None, score_trim=False, lam_aux=False, **fs):
+    '''DML-DiD, repeated cross sections, eq. (6.2); G_lambda = fold mean of d psi/d lambda (Chang, Online Appendix).
+    Defaults give the paper's estimator. Options reproducing departures in Chang's replication code:
+      trim=(lo, hi)  use only fold observations with lo < g-hat < hi (p-hat and theta_k over those);
+      score_trim     drop score values >= |min| before averaging, in the estimate and the variance;
+      lam_aux        lambda-hat from the auxiliary sample instead of the fold.'''
     N = len(D)
-    ghat, ellhat = np.empty(N), np.empty(N)
+    ghat, ellhat, laux = np.empty(N), np.empty(N), np.empty(N)
     ig, il = [], []
     for train, k in folds:
         g, i_g = first_step(Q[train], D[train], True, method, **fs)
         c = train[D[train] == 0]
+        laux[k] = T[train].mean()
         ell, i_l = first_step(Q[c], (T[c] - T[train].mean()) * Y[c], False, method, **fs)
         ghat[k], ellhat[k] = g(Q[k]), ell(Q[k])
         ig.append(i_g)
         il.append(i_l)
     graw = ghat.copy()
-    ghat, phat, lamhat = np.clip(ghat, clip, 1 - clip), fold_mean(D, folds), fold_mean(T, folds)
-    h, w, r = lamhat * (1 - lamhat), (D - ghat) / (phat * (1 - ghat)), (T - lamhat) * Y - ellhat
-    dpsi = -(Y + r * (1 - 2 * lamhat) / h) * w / h  # d psi / d lambda
-    return estimate(r * w / h, D, phat, folds, corr=fold_mean(dpsi, folds) * (T - lamhat)) | dict(
-        diag=_diag(graw, clip, w, ig, il))
+    ghat = np.clip(ghat, clip, 1 - clip)
+    lam = laux if lam_aux else fold_mean(T, folds)
+    h = lam * (1 - lam)
+    parts, thetas = [], []
+    for _, k in folds:
+        m = k if trim is None else k[(ghat[k] > trim[0]) & (ghat[k] < trim[1])]
+        p = D[m].mean()
+        w, r = (D[m] - ghat[m]) / (p * (1 - ghat[m])), (T[m] - lam[m]) * Y[m] - ellhat[m]
+        s = r * w / h[m]
+        thetas.append(_cut(s, score_trim).mean())
+        parts.append((m, p, w, r, s))
+    theta = np.mean(thetas)
+    var = []
+    for m, p, w, r, s in parts:
+        dpsi = -(Y[m] + r * (1 - 2 * lam[m]) / h[m]) * w / h[m]
+        v = s - theta - theta * (D[m] - p) / p + dpsi.mean() * (T[m] - lam[m])
+        var.append(np.mean(_cut(v, score_trim) ** 2))
+    w_all = (D - ghat) / (fold_mean(D, folds) * (1 - ghat))
+    return dict(theta=theta, se=np.sqrt(np.mean(var) / N),
+                diag=_diag(graw, clip, w_all, ig, il) | dict(kept=sum(len(x[0]) for x in parts) / N))
 
 
 def oracle(D, dY, g0, l0, folds):

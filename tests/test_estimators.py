@@ -111,3 +111,31 @@ def test_ridge_refit_is_a_separately_labelled_estimator():
     assert set(rows.est) == {'bcch', 'bcch_rr'}
     assert {'cond_l', 'cond_g', 'w_max', 'g_min', 'nwarn'} <= set(rows.columns)
     assert np.isfinite(rows.cond_l).all()
+
+
+def _rcs_data(seed=9, N=800, p=8):
+    rng = np.random.default_rng(seed)
+    X = rng.standard_normal((N, p))
+    D = rng.binomial(1, dd.G(X[:, 0]))
+    T = rng.binomial(1, .6, N)
+    Y = X[:, 1] + .5 * D + T * (1 + X[:, 0] + 3 * D) + rng.standard_normal(N)
+    return X, D, T, Y, dd.make_folds(N, 5, rng)
+
+
+def test_rcs_default_equals_frozen_v5_and_trim_options_nest():
+    X, D, T, Y, folds = _rcs_data()
+    for m in ('ols', 'ridge'):
+        new, ref = dd.dmldid_rcs(X, D, T, Y, folds, m), old.dmldid_rcs(X, D, T, Y, folds, m)
+        assert np.isclose(new['theta'], ref['theta'], rtol=1e-8) and np.isclose(new['se'], ref['se'], rtol=1e-8)
+    base = dd.dmldid_rcs(X, D, T, Y, folds, 'ols')
+    wide = dd.dmldid_rcs(X, D, T, Y, folds, 'ols', trim=(0., 1.))  # a band that keeps everything
+    assert np.isclose(base['theta'], wide['theta']) and wide['diag']['kept'] == 1
+    band = dd.dmldid_rcs(X, D, T, Y, folds, 'ols', trim=(.2, .8))
+    assert band['diag']['kept'] < 1
+    cut = dd.dmldid_rcs(X, D, T, Y, folds, 'ols', score_trim=True)
+    assert cut['theta'] < base['theta'] and cut['se'] < base['se']  # one-sided: drops the largest contributions
+
+
+def test_score_trim_is_one_sided():
+    x = np.array([-2., -1., .5, 1., 3., 5.])
+    assert np.array_equal(dd._cut(x, True), [-2., -1., .5, 1.]) and np.array_equal(dd._cut(x, False), x)
