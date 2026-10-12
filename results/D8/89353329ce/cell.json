@@ -1,0 +1,12 @@
+{
+  "design": "D8",
+  "cell": "89353329ce",
+  "spec": {
+    "D": "real",
+    "s": 5,
+    "seed_g": 1,
+    "seed_l": 2,
+    "variant": "chang_trim"
+  },
+  "seed": 90
+}
