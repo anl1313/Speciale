@@ -14,7 +14,7 @@ def test_intercept_switch_only_shifts_the_linear_predictor():
     rng = np.random.default_rng(0)
     X = rng.standard_normal((300, 4)) + 5
     y = X[:, 0] + rng.standard_normal(300)
-    full, bug = ap._glmnet_like(X, y, False, seed=1)
+    full, bug, _ = ap._glmnet_like(X, y, False, seed=1)
     diff = full(X) - bug(X)
     assert np.allclose(diff, diff[0]) and abs(diff[0]) > 1  # the omitted term is the intercept
 
@@ -24,4 +24,4 @@ def test_steps_run():
     assert len(Y) == 1084
     for name in ('chang_code', 'bcch'):
         r = ap.chang_dml(Y, D, T, X, B=1, n_jobs=1, **ap.STEPS[name][1])
-        assert np.isfinite(r['theta']) and r['se'] > 0
+        assert np.isfinite(r['theta']) and r['se'] > 0 and r['nwarn'] == 0
