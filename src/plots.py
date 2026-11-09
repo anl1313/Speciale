@@ -17,9 +17,12 @@ def _grid(nr, nc, w=2.6, h=2.2, **kw):
 
 
 def hist(df, col='est', row=None, cols=None, rows=None, z=False, bins=40, names={}):
-    '''Chang (2020, Fig. 1-2): histograms of theta-hat over replications, a panel per (row, col); x shared within rows.
-    Dashed: the normal limit Chang's theorem implies, N(theta0, mean se^2). Mass outside the 0.5-99.5% range is
-    piled on the edges. z=True: (theta-hat - theta0)/se against N(0, 1). names: panel labels, e.g. {'bcch': 'DML-DiD'}.'''
+    '''Chang (2020, Fig. 1-2): histograms of theta-hat over replications, 
+    a panel per (row, col); x shared within rows.
+    Dashed: the normal limit Chang's theorem implies,
+    N(theta0, mean se^2). Mass outside the 0.5-99.5% range is
+    piled on the edges. z=True: (theta-hat - theta0)/se against N(0, 1). 
+    names: panel labels, e.g. {'bcch': 'DML-DiD'}.'''
     df = _ok(df)
     cols = cols or list(df[col].dropna().unique())
     rows = rows or ([None] if row is None else list(df[row].dropna().unique()))
@@ -33,7 +36,8 @@ def hist(df, col='est', row=None, cols=None, rows=None, z=False, bins=40, names=
         x = np.linspace(lo, hi, 300)
         for j, k in enumerate(cols):
             ax, dk = axs[i, j], d[d[col] == k]
-            ax.hist(dk.v.dropna().clip(lo, hi), bins=bins, range=(lo, hi), density=True, color='0.75', edgecolor='white')
+            ax.hist(dk.v.dropna().clip(lo, hi), bins=bins, range=(lo, hi), density=True, 
+                    color='navy', edgecolor='white')
             ax.axvline(c, color='k', lw=1)
             if dk.se.notna().any():
                 ax.plot(x, norm.pdf(x, c, 1. if z else dk.se.mean()), 'k--', lw=1)
