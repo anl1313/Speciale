@@ -1,0 +1,7 @@
+variant,theta,se,median split,min split,max split,sel g,sel l,dropped per fold
+Chang as coded,-5.945,2.539,-5.858,-14.096,3.472,3.82,1.97,5.135
+keep all scores,3.317,4.485,3.328,-6.763,14.232,3.82,1.97,0.0
+add intercepts,-11.959,1.665,-11.907,-15.135,-8.928,3.82,1.97,1.735
+"intercepts, keep all scores",-9.9,2.286,-10.113,-12.829,-5.297,3.82,1.97,0.0
+"intercepts, all scores, clip",-9.885,2.361,-10.105,-12.829,-5.298,3.82,1.97,0.0
+"intercepts, all scores, clip, lambda.min",-3.549,3.07,-3.88,-9.134,5.744,6.57,6.785,0.0

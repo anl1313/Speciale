@@ -32,3 +32,18 @@ gives -5.893 (SE 2.575).
 The share of treated shipments is 0.162. The cross-validated Lasso selects on
 average 3.7 of the nine covariates for the propensity score and 2.0 for the
 outcome (6.8 and 7.0 with lambda.min).
+
+## Result of `chang_port.py` (100 splits, K = 2, seed 666)
+
+| Variant | Estimate | SE | Min split | Max split |
+|---|---|---|---|---|
+| Chang as coded | -5.945 | 2.539 | -14.10 | 3.47 |
+| keep all scores | 3.317 | 4.485 | -6.76 | 14.23 |
+| add the fitted intercepts | -11.959 | 1.665 | -15.14 | -8.93 |
+| intercepts, keep all scores | -9.900 | 2.286 | -12.83 | -5.30 |
+| ... and clip g instead of dropping observations | -9.885 | 2.361 | -12.83 | -5.30 |
+| ... and lambda.min instead of lambda.1se | -3.549 | 3.070 | -9.13 | 5.74 |
+
+The port selects on average 3.8 and 2.0 covariates and discards 5.1 scores per
+fold, against 3.7, 2.0 and 5.3 in R. Its first row is close to what Chang's own
+script gives with R's current random numbers (-5.893).
