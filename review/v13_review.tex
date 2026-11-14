@@ -66,14 +66,14 @@
 \newlabel{sec:emp}{{6}{}{}{}{}}
 \newlabel{sec:conclusion}{{7}{}{}{}{}}
 \newlabel{tab:d1}{{1}{}{}{}{}}
-\newlabel{tab:e1}{{8}{}{}{}{}}
+\newlabel{tab:e1}{{9}{}{}{}{}}
 \newlabel{eq:sparsity1}{{7}{}{}{}{}}
 \newlabel{eq:sparsity2}{{8}{}{}{}{}}
 \setlist{itemsep=2pt,topsep=3pt}
 \setcounter{tocdepth}{2}
 \setcounter{table}{1}
 \title{Review of thesis v13\\[2pt]\large corrections and ready-to-paste inserts}
-\date{14 November 2026}
+\date{14 November 2026 (Section 6 revised after recreating Chang's estimate)}
 \begin{document}
 \sloppy
 \maketitle
@@ -119,8 +119,10 @@ Everything here supersedes the earlier files; you do not need
   written up. For D2/D3 and D4 the results are in the repository, but the thesis
   has only headings, or my chat notes pasted in. Part~\ref{sec:sims} gives
   the full text and the tables, with your numbers.
-\item \textbf{Two parts are missing:} Section~6 (the application; I see no
-  result files for it in the repository) and the conclusion.
+\item \textbf{Two parts are missing:} Section~6 (the application) and the
+  conclusion. For Section~6 the baseline estimates now exist, and Chang's own
+  estimate has been recreated (Part~\ref{sec:emp-ins}); the runs across reference
+  groups remain.
 \item \textbf{The introduction undersells the thesis.} It does not mention the
   pooling result (Proposition~13 and Corollary~14), which is the most original
   part, and it presents Propositions~6 and~8 as new, although they are known
@@ -131,9 +133,8 @@ Everything here supersedes the earlier files; you do not need
 \begin{enumerate}
 \item Fix the mathematics (Part~\ref{sec:math}). Mostly pasting. Half a day.
 \item Paste D2/D3 and D4 with their tables (Part~\ref{sec:sims}). Half a day.
-\item Decide what to do with Section~6 (Part~\ref{sec:emp-ins}). If you have
-  not run it, this is the largest remaining task; say so and I will help you
-  plan the run or cut the section down.
+\item Finish Section~6 (Part~\ref{sec:emp-ins}): the baseline and the recreation
+  of Chang's estimate are done; the runs across reference groups remain.
 \item Paste and adjust the conclusion (Part~\ref{sec:concl-ins}).
 \item Framing, literature and bibliography (Parts~\ref{sec:front},
   \ref{sec:lit}, \ref{sec:obvious}).
@@ -1802,17 +1803,27 @@ and move Table~\ref{tab:d4a} to the appendix.}
 Section~6 of v13 (pp.~24--25) is still the plan from v11: an opening paragraph
 in which five citations are broken, the summary of Sequeira's paper, a paragraph
 of intentions (``I intend to conflate the covariate matrix \dots''), a note in
-Danish, and an empty heading ``Sparsity in DML''. The repository contains the
-code for the section (the last three cells of \texttt{d1.ipynb}) but no results.
+Danish, and an empty heading ``Sparsity in DML''.
+
+\paragraph{Update, 14 November.} You have since run Chang's nine covariates with
+your own first steps (50 splits, $K=5$): $-3.157$ (SE 3.481) with post-Lasso and
+$-12.682$ (SE 2.263) without the refit. At your suggestion I then ran Chang's
+original replication code (\texttt{Table 2/DMLML.R} in his repository). It
+reproduces his published estimate to every digit, and taking it apart changes
+what Section~6 should say. Part~\ref{sec:emp-a} is rewritten accordingly. The
+scripts behind the numbers are in \texttt{replication/}.
+
+\paragraph{Correction.} The first version of this file said that Chang's
+estimate, $-5.222$, equals the unadjusted difference in differences, $-5.228$,
+because ``his first steps do essentially no adjustment''. That was wrong. His
+Lasso fits select on average 3.7 of the nine covariates for the propensity score
+and 2.0 for the outcome; the two numbers agree by coincidence. The claim is
+removed from the inserts below and from the conclusion.
 
 The text below is complete except for the numbers in \ph{orange}, which must come
-from your run. Every number that is \emph{not} orange I recomputed today from
-\texttt{Bribes\_Regression.dta} with the sample definition of your notebook; they
-need no estimation. If you run out of time, Parts~\ref{sec:emp-a}
-and~\ref{sec:emp-b} alone already make a section: they need only one estimate
-from you (DML-DiD with Chang's nine covariates), and they contain the most
-striking fact, that Chang's reported estimate equals the unadjusted
-difference in differences.
+from your run. The numbers in panels A and C of Table~\ref{tab:e0} are from my
+runs today; rerun them yourself before you use them (Part~\ref{sec:emp-a} says
+how).
 
 Small fixes in the paragraph you keep (``Is trade liberalization a briber's
 utopia?''): ``a 8-year window'' should be ``an 8-year window''; and the paragraph
@@ -1845,31 +1856,104 @@ day of the week of arrival, entered as a number from 1 to 7; and an indicator
 for monitoring. With $N=1084$ complete cases, this is hardly a high-dimensional
 setting.
 
-\paragraph{What the application can show.} Three features of the data limit
-what can be learned about the ATT itself. First, Chang's DML-DiD estimate with
-Lasso first steps, $-5.222$, is practically equal to the unadjusted difference
-in differences of the four group means in his sample, $-5.228$: his first steps
-do essentially no adjustment. Second, the estimator for repeated cross-sections
-assumes that both periods are samples from the same population (RCS(i)). In the
-data, the treated share is 0.40 among the 140 shipments before 2008 and 0.13
-among the 944 after, and five of the eight clearing agents appear only after
-2008. If the propensity score depends on the period only, the score weights the
-post-period difference between treated and controls by
-$\Pr(T=1\mid D=1)/\Pr(T=1)=0.78$ and the pre-period difference by
-$\Pr(T=0\mid D=1)/\Pr(T=0)=2.46$, instead of 1 and 1, and gives $-13.3$ instead
-of $-5.2$; with no covariates at all, it gives $-18.7$. The level of the estimate
-therefore depends mainly on how the change in composition between the periods is
-handled, and Chang handles it by including the period indicator among the
-covariates. Third, 82.3\% of the outcomes are zero, and an average effect on
-$\log(1+Y)$ depends on the units in which $Y$ is measured
-\parencite{chen2024logs}. I therefore follow Chang's specification, and I use the
-application to measure how far the coding of the covariates moves the estimate
-within it, not to estimate the ATT.
+\paragraph{Recreating Chang's estimate.} Chang reports a DML-DiD estimate of
+$-5.222$ with a standard error of 2.647. His replication code reproduces both
+numbers exactly.\footnote{With R's sampling algorithm set to the one used before
+version 3.6.0, \texttt{RNGkind(sample.kind = "Rounding")}. With the current
+default, the same code draws different random splits and gives $-5.893$ (SE
+2.575).} The code follows Definition~2 with $K=2$ folds, penalties chosen by
+10-fold cross-validation with the one-standard-error rule, and no refit, and it
+averages the estimate over 100 random splits. In three respects it does
+something that the paper does not describe. First, observations with a fitted
+propensity score outside $(0.03,0.97)$ are dropped. Second, both nuisance
+functions are predicted without the intercept that the Lasso has fitted,
+$\hat g=\Lambda(X'\hat\beta)$ and $\hat\ell_2=X'\hat\beta$. The fitted propensity
+scores then average 0.27, while 16\% of the shipments are treated. Third, within
+each fold, the code discards every score that is at least as large as the
+absolute value of the smallest score in the fold before it averages them. This
+removes on average 5 of about 530 scores per fold, all of them positive.
 \end{ins}
-\note{``for large firms'': the variable is \texttt{dfs}; check its definition in
-Sequeira's paper before you describe it. $-5.222$ is Chang's Table~2;
-$-5.228$, $-13.3$ and $-18.7$ are my calculations (the last two are the score
-$\psi_2$ with first steps that depend on the period only, and on nothing).}
+\begin{table}[ht]
+\centering\small
+\begin{tabular}{l rr rr}
+\toprule
+ & & & \multicolumn{2}{c}{Single splits}\\
+\cmidrule(lr){4-5}
+ & Estimate & SE & Min & Max\\
+\midrule
+\multicolumn{5}{l}{\emph{A. Chang's procedure: cross-validated penalty, no refit, $K=2$, 100 splits}}\\
+\quad \textcite[Table~2]{chang2020double} & $-5.222$ & 2.647 & & \\
+\quad His replication code & $-5.222$ & 2.647 & $-13.71$ & 7.62\\
+\quad \dots\ all scores kept & 4.308 & 4.592 & $-5.35$ & 18.34\\
+\quad \dots\ fitted intercepts included & $-12.105$ & 1.711 & $-15.53$ & $-9.17$\\
+\quad \dots\ intercepts included and all scores kept & $-10.091$ & 2.377 & $-14.64$ & 0.47\\
+\addlinespace
+\multicolumn{5}{l}{\emph{B. This thesis: plug-in penalty, clipping, $K=5$, 50 splits}}\\
+\quad Lasso (no refit) & $-12.682$ & 2.263 & $-13.69$ & $-11.28$\\
+\quad Post-Lasso & $-3.157$ & 3.481 & $-6.15$ & 3.14\\
+\addlinespace
+\multicolumn{5}{l}{\emph{C. Without first steps}}\\
+\quad Difference in differences of the four group means & $-5.228$ & & & \\
+\quad Score $\psi_2$, first steps depend on the period only & $-13.33$ & & & \\
+\quad Score $\psi_2$, constant first steps & $-18.67$ & & & \\
+\bottomrule
+\end{tabular}
+\caption{DML-DiD in Chang's application with his nine covariates, $N=1084$.
+Panel~A: mean over the 100 splits and standard error as computed by Chang's code,
+with one step of the code changed at a time. Panel~B: median over the splits and
+the standard error of \textcite[Section~3.4]{chernozhukov2018double}.}
+\label{tab:e0}
+\end{table}
+\begin{ins}
+Panel~A of Table~\ref{tab:e0} shows what these steps do. The third one decides
+the sign: with all scores kept, the same code gives $+4.3$. With the fitted
+intercepts included, it gives $-12.1$, and $-10.1$ when all scores are kept as
+well. The published estimate thus depends on two steps of the code that the
+paper does not describe. Implemented as the paper describes it, with Chang's own
+tuning, DML-DiD gives $-10.1$ with a standard error of 2.4, about twice the
+published estimate.
+
+Panel~B shows my implementation with the same nine covariates. Without the
+refit it gives $-12.7$, close to panel~A with the intercepts included, and
+close to what the score gives when the first steps depend on the period only
+($-13.3$, panel~C): the shrunken Lasso fits adjust for little more than the
+period. With the refit, the estimate is $-3.2$ with a standard error of 3.5, and
+single splits range from $-6.1$ to $3.1$.
+
+\paragraph{What the application can show.} For one data set and one set of nine
+covariates, the estimates in Table~\ref{tab:e0} range from $+4$ to $-13$. Two
+features of the data add to this. First, the estimator for repeated
+cross-sections assumes that both periods are samples from the same population
+(RCS(i)). In the data, the treated share is 0.40 among the 140 shipments before
+2008 and 0.13 among the 944 after, and five of the eight clearing agents appear
+only after 2008. This is why the estimate depends so strongly on how the period
+indicator, which Chang includes among the covariates, is fitted: with constant
+first steps the score gives $-18.7$, and with first steps that depend on the
+period only it gives $-13.3$, because the score then weights the post-period
+difference between treated and controls by $\Pr(T=1\mid D=1)/\Pr(T=1)=0.78$ and
+the pre-period difference by $\Pr(T=0\mid D=1)/\Pr(T=0)=2.46$. Second, 82.3\% of
+the outcomes are zero, and an average effect on $\log(1+Y)$ depends on the units
+in which $Y$ is measured \parencite{chen2024logs}. I therefore do not interpret
+the level of any of these estimates. I keep Chang's specification and use the
+application to measure how far the coding of the covariates moves the estimate
+within it.
+\end{ins}
+\note{(i) Panels A and C are my runs. To make the numbers yours: for the second
+row, run Chang's \texttt{DMLML.R} unchanged with the line
+\texttt{RNGkind(sample.kind = "Rounding")} added before \texttt{DMLML(Y,D,p,T)};
+for the other rows of panel~A, use \texttt{replication/chang\_variants.R}
+(exact, in R) or the Python port \texttt{replication/chang\_port.py}, which
+follows the same steps with other random splits and gives numbers within about
+one point of these. (ii) The statement about the paper is a statement about
+code, and it is easy to check: the lines are \texttt{beta1hat=fit\$beta},
+\texttt{ellhat2=p[index1,]\%*\%beta2hat} and
+\texttt{s=s[which(s<abs(min(s)))]} in \texttt{DMLML.R}; neither the paper nor
+its online appendix mentions trimming or the removal of scores. Still, show the
+table to your supervisor before you build the section on it, and keep the
+wording descriptive, as above. (iii) ``for large firms'': the variable is
+\texttt{dfs}; check its definition in Sequeira's paper before you describe it.
+(iv) $-5.228$ is close to Chang's $-5.222$ by coincidence; do not comment on
+it.}
 
 \subsection{Codings and results}\label{sec:emp-b}
 \where{After the previous insert.}
@@ -1897,10 +1981,9 @@ sample splits with $K=5$, and I report the median over splits with the standard
 error of \textcite[Section~3.4]{chernozhukov2018double}, which accounts for the
 variation across splits.
 
-\paragraph{Results.} Table~\ref{tab:e1} reports the estimates. With Chang's nine
-covariates, DML-DiD with post-Lasso first steps gives \ph{$\cdot$} (SE
-\ph{$\cdot$}), and without the refit \ph{$\cdot$}, against the $-5.222$ he
-reports with a cross-validated penalty. With product-group dummies, the
+\paragraph{Results.} Table~\ref{tab:e1} reports the estimates. The starting point is
+the post-Lasso estimate with Chang's nine covariates, $-3.2$ (SE 3.5,
+Table~\ref{tab:e0}). With product-group dummies, the
 propensity Lasso selects the dummies of \ph{three} groups, \ph{vegetables,
 machinery and transportation}, whose treated shares (0.67, 0.67 and 0.05) differ
 most from the others. \ph{Nine} of the other ten groups, as reference, yield the
@@ -2011,9 +2094,11 @@ unbiased there.
 In Chang's application, \ph{the choice of reference group for the product-group
 dummies moves the estimate by 1.3 standard errors, and the default choice, the
 largest group, gives the estimate furthest from the invariant benchmark.} The
-level of the estimate is not credible, because the composition of the sample
-changes between the periods; indeed, the estimate Chang reports equals the
-unadjusted difference in differences.
+level of the estimate cannot be interpreted. The composition of the sample
+changes between the periods, and for Chang's own nine covariates the estimate
+ranges from $+4$ to $-13$ depending on details of the implementation: his
+published estimate of $-5.2$ rests on two steps of his code that the paper does
+not describe, and without them the same procedure gives $-10.1$.
 
 For applied work, the results suggest four practices. Report DML-DiD under
 alternative codings of the controls, together with their range; a large range
@@ -2358,12 +2443,11 @@ between British and American spelling (``categorise''/``categorize'',
 \section{Questions for you}\label{sec:questions}
 
 \begin{enumerate}
-\item \textbf{Section~6.} I see the code in the notebook but no result files.
-  Have you run it? If not: do you want to run the full version (about
-  $15\times100$ cross-fits on $N=1081$), or the short version
-  (Parts~\ref{sec:emp-a} and~\ref{sec:emp-b} with only the estimate for
-  Chang's nine covariates and two or three reference groups)? The conclusion and
-  contribution (c) depend on this.
+\item \textbf{Section~6.} The baseline and the recreation of Chang's estimate
+  are done (Table~\ref{tab:e0}). Do you want the full comparison across the 13
+  reference groups and the forced-in dummies (about $15\times50$ cross-fits), or
+  two or three reference groups only? And are you comfortable reporting panel~A
+  of Table~\ref{tab:e0}? Ask your supervisor.
 \item \textbf{Centring.} Include the check in Section~6, or drop centring as a
   choice you study?
 \item \textbf{D2/D3.} Main text with both tables, or one table in the text and
