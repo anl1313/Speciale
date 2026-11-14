@@ -1,0 +1,2380 @@
+% =============================================================================
+%  v13_review.tex -- review of thesis v13: corrections and ready-to-paste inserts
+% -----------------------------------------------------------------------------
+%  Page numbers refer to Master_s_thesis_13.pdf.
+%  Text with a bar in the left margin is thesis text: copy it into the thesis.
+%  Everything else is commentary.
+%
+%  The inserts refer to results by label. Add these \label{...} to the thesis
+%  (or replace them by your own labels):
+%     Assumption 3  ass:chang      Lemma 4        lem:bias
+%     Assumption 5  ass:rate       Proposition 6  prop:sparse
+%     Proposition 7 prop:ratefail  Proposition 8  prop:ratedr
+%     Proposition 9 prop:stein     Lemma 10       lem:invariance
+%     Lemma 11      lem:weights    Proposition 12 prop:decomp
+%     Proposition 13 prop:pool     Corollary 14   cor:reference
+%     Lemma 25      lem:decomp     Lemma 26       lem:variance
+%     Lemma 27      lem:consist
+%     Sections 4.1, 4.2, 5, 6, 7: sec:nonsparse, sec:basis, sec:mc, sec:emp, sec:conclusion
+%     Tables: tab:d1, tab:pooling, tab:d23, tab:d23formula, tab:d4a, tab:d4aN, tab:d4b, tab:e1
+%
+%  Build:  cd review && pdflatex v13_review && biber v13_review && pdflatex v13_review (twice)
+% =============================================================================
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=2.4cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm,graphicx,enumitem,xcolor,booktabs,framed}
+\usepackage[hidelinks]{hyperref}
+\usepackage[style=authoryear,backend=biber,maxcitenames=2,uniquelist=false,uniquename=false]{biblatex}
+\addbibresource{v13_refs.bib}
+\providecommand{\E}{\mathbb{E}}
+\newcommand{\ph}[1]{\textcolor{orange!85!black}{\textbf{[#1]}}}
+\newcommand{\where}[1]{\par\medskip\noindent{\small\textcolor{black!60}{\textsf{\textbf{Where:} #1}}}\par\nopagebreak\smallskip}
+\newcommand{\note}[1]{\par\noindent{\small\textcolor{blue!55!black}{\textsf{\textbf{Note:} #1}}}\par\smallskip}
+\newcommand{\wrong}[1]{\textcolor{red!70!black}{#1}}
+% thesis text: bar in the left margin (tables sit between two such blocks)
+\newenvironment{ins}{\begin{leftbar}}{\end{leftbar}}
+\theoremstyle{plain}
+\newtheorem{lemma}{Lemma}
+\renewcommand{\thelemma}{\unskip}
+\newtheorem{proposition}[lemma]{Proposition}
+\newtheorem{corollary}[lemma]{Corollary}
+\newtheorem{definition}[lemma]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[lemma]{Remark}
+% --- thesis v13 numbers, for this preview only --------------------------------
+\newlabel{ass:chang}{{3}{}{}{}{}}
+\newlabel{lem:bias}{{4}{}{}{}{}}
+\newlabel{ass:rate}{{5}{}{}{}{}}
+\newlabel{prop:sparse}{{6}{}{}{}{}}
+\newlabel{prop:ratefail}{{7}{}{}{}{}}
+\newlabel{prop:ratedr}{{8}{}{}{}{}}
+\newlabel{prop:stein}{{9}{}{}{}{}}
+\newlabel{lem:invariance}{{10}{}{}{}{}}
+\newlabel{lem:weights}{{11}{}{}{}{}}
+\newlabel{prop:decomp}{{12}{}{}{}{}}
+\newlabel{prop:pool}{{13}{}{}{}{}}
+\newlabel{cor:reference}{{14}{}{}{}{}}
+\newlabel{lem:decomp}{{25}{}{}{}{}}
+\newlabel{lem:variance}{{26}{}{}{}{}}
+\newlabel{lem:consist}{{27}{}{}{}{}}
+\newlabel{sec:nonsparse}{{4.1}{}{}{}{}}
+\newlabel{sec:basis}{{4.2}{}{}{}{}}
+\newlabel{sec:mc}{{5}{}{}{}{}}
+\newlabel{sec:emp}{{6}{}{}{}{}}
+\newlabel{sec:conclusion}{{7}{}{}{}{}}
+\newlabel{tab:d1}{{1}{}{}{}{}}
+\newlabel{tab:e1}{{8}{}{}{}{}}
+\newlabel{eq:sparsity1}{{7}{}{}{}{}}
+\newlabel{eq:sparsity2}{{8}{}{}{}{}}
+\setlist{itemsep=2pt,topsep=3pt}
+\setcounter{tocdepth}{2}
+\setcounter{table}{1}
+\title{Review of thesis v13\\[2pt]\large corrections and ready-to-paste inserts}
+\date{14 November 2026}
+\begin{document}
+\sloppy
+\maketitle
+\vspace{-2.5em}
+
+\section*{How to read this file}
+Page numbers refer to \texttt{Master\_s\_thesis\_13.pdf}. I read all 44 pages, as
+text and as rendered pages, redid every derivation in Sections 3--4 and in the
+appendix by hand, recomputed every number in Section~5 from the CSV files in the
+repository, and checked the citations I could against the papers themselves.
+\begin{itemize}
+\item Text with a bar in the left margin is thesis text. Copy it from
+  \texttt{review/v13\_review.tex}; a grey line above it says where it goes.
+\item \ph{Orange brackets} are numbers you still have to fill in from your own runs.
+\item Blue notes are instructions to you, not thesis text.
+\item ``Part~3'' means Section~3 of this file; ``Section~3'' always means the
+  thesis.
+\item The inserts use \verb|\ref{...}| with the labels listed at the top of the
+  \texttt{.tex} file. In this PDF they print with the v13 numbers.
+\item The citation keys are mine (file \texttt{review/v13\_refs.bib}). For
+  entries you already have, replace my key by yours.
+\item The inserts assume \verb|\providecommand{\E}{\mathbb{E}}|, \texttt{biblatex}
+  (\verb|\textcite|, \verb|\parencite|) and, for the tables, \texttt{booktabs}.
+\end{itemize}
+Everything here supersedes the earlier files; you do not need
+\texttt{thesis\_text.pdf} or \texttt{v12\_review.md} any more.
+
+\tableofcontents
+
+% =============================================================================
+\section{Verdict and order of work}
+
+\subsection{Where the thesis stands}
+\begin{itemize}
+\item \textbf{The theory holds.} I checked every step of Lemma~4,
+  Propositions~6--9, Lemma~10--11, Propositions~12--13, Corollary~14 and
+  Lemmas~25--27, including the proof of Proposition~7. The results are correct.
+  What is wrong is in the write-up: about ten places where the printed statement
+  or a proof step is not what you mean (Part~\ref{sec:math} below). The two
+  that matter most are the missing conditioning on $X$ in the identifying
+  assumptions, and $\hat p_k$, which is still defined in two different ways.
+\item \textbf{The simulations are done and they confirm the theory.} D1 is
+  written up. For D2/D3 and D4 the results are in the repository, but the thesis
+  has only headings, or my chat notes pasted in. Part~\ref{sec:sims} gives
+  the full text and the tables, with your numbers.
+\item \textbf{Two parts are missing:} Section~6 (the application; I see no
+  result files for it in the repository) and the conclusion.
+\item \textbf{The introduction undersells the thesis.} It does not mention the
+  pooling result (Proposition~13 and Corollary~14), which is the most original
+  part, and it presents Propositions~6 and~8 as new, although they are known
+  results applied to DML-DiD. See Part~\ref{sec:obvious}.
+\end{itemize}
+
+\subsection{Order of work}
+\begin{enumerate}
+\item Fix the mathematics (Part~\ref{sec:math}). Mostly pasting. Half a day.
+\item Paste D2/D3 and D4 with their tables (Part~\ref{sec:sims}). Half a day.
+\item Decide what to do with Section~6 (Part~\ref{sec:emp-ins}). If you have
+  not run it, this is the largest remaining task; say so and I will help you
+  plan the run or cut the section down.
+\item Paste and adjust the conclusion (Part~\ref{sec:concl-ins}).
+\item Framing, literature and bibliography (Parts~\ref{sec:front},
+  \ref{sec:lit}, \ref{sec:obvious}).
+\item Cut the appendix (Part~\ref{sec:obvious}) and do the notation and typo
+  pass (Parts~\ref{sec:coherence}, \ref{sec:form}).
+\end{enumerate}
+
+% =============================================================================
+\section{Corrections to the mathematics}\label{sec:math}
+
+Items marked \textbf{(wrong as printed)} change the meaning of a statement or a
+proof. The others are notation or wording.
+
+\subsection{Section 3: Chang's framework (pp.~5--10)}
+
+\paragraph{M1 (p.~6). The conditioning on $X_i$ is missing (wrong as printed).}
+RO(ii) prints ``$\Pr(D_i=1_i)<1-\varepsilon$'', RO(iii) prints
+``$\E[Y_i^0(1)-Y_i^0(0)_i,D_i=1]$'', and equation~(2) and the sentence after it
+print ``$P(D_i=1_i)$''. In each case ``$\mid X$'' has dropped out and only the
+subscript $i$ is left, so the identifying assumptions do not say what they
+should. The same has happened in Assumption~3: ``$\E[U]=0$ and
+$\E[V_1,D=0]=0$'', and in (c) and (d). Search the source for the macro or
+replace-all that removed ``\verb+|X+''. The assumptions and (2) should read:
+\begin{ins}
+\begin{itemize}
+\item[RO(ii)] \emph{Common support:} $\Pr(D_i=1)>0$ and
+  $\Pr(D_i=1\mid X_i)\le1-\varepsilon$ almost surely, for some $\varepsilon>0$.
+\item[RO(iii)] \emph{Conditional parallel trends:}
+  $\E[Y_i^0(1)-Y_i^0(0)\mid X_i,D_i=1]=\E[Y_i^0(1)-Y_i^0(0)\mid X_i,D_i=0]$.
+\end{itemize}
+\[
+  \theta_0=\E\left[\frac{Y_i(1)-Y_i(0)}{P(D_i=1)}\cdot
+  \frac{D_i-P(D_i=1\mid X_i)}{1-P(D_i=1\mid X_i)}\right]
+\]
+\end{ins}
+In Assumption~3: $\E[U\mid X]=0$ and $\E[V_1\mid X,D=0]=0$; (c)
+$\E[U^2\mid X]\le C$; (d) $\E[V_1^2\mid X]\le C$. These are Chang's conditions,
+and the proof of Lemma~27 uses (d) in the conditional form.
+
+\paragraph{M2 (pp.~6--7). Small things in Section 3.1.}
+\begin{itemize}
+\item The assumption for repeated cross-sections is labelled ``RPC(i)'' and the
+  estimand $\theta_0^{RPC}$. It should be RCS.
+\item In (3) and (5), write $\hat g(X_i)$, and
+  ``where $\hat p$ estimates $p_0\equiv P(D=1)$'' instead of ``$\hat p$ is the
+  calculated constant $p_0$''.
+\item The paragraph after (2) describes the untreated twice (``For the
+  untreated, whose values \dots\ Conversely for the untreated''). Shorter and
+  correct: ``A treated unit has weight $1/p_0$. An untreated unit has weight
+  $-g_0(X_i)/\{p_0(1-g_0(X_i))\}$, the odds of treatment: untreated units that
+  resemble the treated count more, and untreated units that do not resemble them
+  count less.''
+\end{itemize}
+
+\paragraph{M3 (p.~7). The paragraph on Neyman orthogonality is broken.}
+\begin{itemize}
+\item ``repeated cross-sections (9)'' and, further down, ``means that
+  \wrong{repeated outcomes} are locally insensitive'' are \verb|\ref|s that
+  resolve to the wrong thing.
+\item The sentence ``Chang proves for $\mathcal T_N\subset\mathcal T$ \dots\ with
+  high probability that'' ends in Definition~1.
+\item $D_r$ maps into $\mathbb R$, not $\mathbb R^s$ ($\theta_0$ is a scalar, and
+  $s$ is the sparsity index later).
+\item In the display for $D_0$, a bracket is missing and the direction
+  $[\eta-\eta_0]$ is not shown. In Definition~1, $\rho_0$ should be $p_0$.
+\item ``(Chang (2020); Chernozhukov et al. (2018).'' has unbalanced brackets.
+\end{itemize}
+Replacement for the text from ``The reason for introducing the adjustment
+terms'' to the end of Definition~1:
+\begin{ins}
+The adjustment terms make the scores Neyman orthogonal
+\parencite{chang2020double,chernozhukov2018double}: the moment conditions are
+locally insensitive to the nuisance functions, so that errors in $\hat g$ and
+$\hat\ell$ affect the estimator only through their product.
+
+Formally, let $\eta=(g,\ell)\in\mathcal T$, where $\mathcal T$ is a convex subset
+of a normed vector space, and for $\eta\in\mathcal T$ and $r\in[0,1)$ define the
+directional (Gateaux) derivative
+\[
+  D_r[\eta-\eta_0]\equiv\partial_r\,\E\big[\psi\big(W,\theta_0,p_0,\eta_0+r(\eta-\eta_0)\big)\big],
+  \qquad
+  \partial_\eta\E\,\psi(W,\theta_0,p_0,\eta_0)[\eta-\eta_0]\equiv D_0[\eta-\eta_0].
+\]
+Let $\mathcal T_N\subset\mathcal T$ be a nuisance realisation set, i.e.\ a set
+that contains the estimator of $\eta_0$ with probability approaching one.
+
+\begin{definition}
+The score $\psi$ obeys the Neyman orthogonality condition at
+$(\theta_0,p_0,\eta_0)$ with respect to $\mathcal T_N$ if $D_r[\eta-\eta_0]$
+exists for all $r\in[0,1)$ and $\eta\in\mathcal T_N$, and
+$\partial_\eta\E\,\psi(W,\theta_0,p_0,\eta_0)[\eta-\eta_0]=0$ for all
+$\eta\in\mathcal T_N$.
+\end{definition}
+
+\textcite[Lemma~3.1]{chang2020double} shows that $\psi_1$ and $\psi_2$ obey this
+condition. Note that the scores are orthogonal with respect to the functions
+$(g,\ell)$ only, not with respect to the constants $p_0$ and $\lambda_0$. The
+estimation error in $\hat p$ and $\hat\lambda$ therefore does not vanish at first
+order. It does not create bias, but it enters the asymptotic variance, which is
+why the variance estimators below contain the terms $\hat G_p(D-\hat p_k)$ and
+$\hat G_\lambda(T-\hat\lambda_k)$.
+\end{ins}
+
+\paragraph{M4 (p.~8, p.~28, p.~33). $\hat p_k$ is defined in two ways (wrong as printed).}
+Definition~2 computes $\hat p_k$ on the auxiliary sample,
+$(N-n)^{-1}\sum_{i\in I_k^c}D_i$. The appendix (p.~28 and p.~33) computes it on
+the fold. Footnote~2 (p.~33) says ``on the auxiliary sample'', directly under a
+sentence that says the fold. The proof of Lemma~25 says ``the mean of $N-n$
+Bernoulli variables''. Your code uses the fold, and so does Chang's.
+\begin{itemize}
+\item Definition~2, sentence after the two displays:
+\begin{ins}
+where $\hat p_k=n^{-1}\sum_{i\in I_k}D_i$ and
+$\hat\lambda_k=(N-n)^{-1}\sum_{i\in I_k^c}T_i$, and
+$(\hat g_k,\hat\ell_{1k},\hat\ell_{2k})$ are estimators of the nuisance functions
+constructed using the auxiliary sample.
+\end{ins}
+\item Footnote~2 (move it to Definition~2):
+\begin{ins}
+\textcite[Definition~3.1]{chang2020double} writes
+$\hat p_k=n^{-1}\sum_{i\in I_k^c}D_i$, which sums over the auxiliary sample but
+divides by the size of the fold. I compute $\hat p_k$ on the fold $I_k$, as his
+replication code and his proofs do. With $\hat p_k$ from the auxiliary sample,
+the numerator and denominator of $\tilde\theta_k$ would be independent, and by
+Jensen's inequality $\tilde\theta_k$ would have a bias of about
+$\theta_0(1-p_0)/\{p_0(N-n)\}$. In Chang's simulation design with $K=5$ this is
+0.019, which is of the same order as the standard deviation of the estimator
+(0.025). With $\hat p_k$ from the fold, the
+treated part of $\tilde\theta_k$ is an average over the treated units of the
+fold, and this bias does not arise. $\hat\lambda_k$ is computed on $I_k^c$,
+because the outcome nuisance is fitted on $(T-\hat\lambda_k)Y$ there.
+\end{ins}
+\item p.~35, proof of Lemma~25: ``$\hat p_k$ is the mean of $n$ Bernoulli($p_0$)
+  variables''.
+\item p.~35, Lemma~26(v) and the sentence after it: see M24.
+\end{itemize}
+\note{The number is $\theta_0(1-p_0)/\{p_0(N-n)\}=3\cdot0.5/(0.5\cdot160)=0.019$ for
+$N=200$ and $K=5$; with Chang's $K=2$ it is $0.030$. The SD of 0.025 is from your
+Table~1.}
+
+\paragraph{M5 (pp.~8--9). $\tilde\theta$ and $\hat\theta$.}
+Definition~2(c) calls the final estimator $\hat\theta$, the limit theorem on
+p.~9 uses $\hat\theta$, but the variance estimators, Propositions~7--8 and the
+whole appendix use $\tilde\theta$ for it, and Section~5 switches back to
+$\hat\theta$. Use $\tilde\theta$ everywhere, as Chang does ($\tilde\theta_k$ for
+the folds, $\tilde\theta$ for their average).
+
+\paragraph{M6 (pp.~8--9). Assumption 3 and the limit theorem.}
+\begin{itemize}
+\item $\Sigma_{10}$ has a misplaced bracket. It should be
+  $\Sigma_{10}\equiv\E\big[\big(\psi_1(W,\theta_0,p_0,\eta_{10})+G_{1p_0}(D-p_0)\big)^2\big]$.
+\item (a) ``requires that every subject has a bounded, non-zero probability of
+  receiving a propensity score'' should be ``requires that, for every value of
+  the covariates, the probabilities of being treated and of being untreated are
+  both at least $\kappa$''.
+\item (b) $\|UV_1\|_{P,4}\le C$ is a moment bound on the product of the two
+  residuals, not a ``correlation''.
+\item (e) ``The variance of the variance of the score'' should be ``The asymptotic
+  variance must be positive''.
+\item (f)(ii) ``rules out that the denominator in the score function to go
+  crazy'' should be ``keeps the denominator $1-\hat g_k$ away from zero''.
+\item (f)(iii): the sentence says the sum must vanish ``at a rate of
+  $N^{-1/2}$'', but the display bounds it by $\varepsilon_N^2$. The rate
+  $N^{-1/2}$ only follows once $\varepsilon_N=o(N^{-1/4})$. Write ``must be at
+  most $\varepsilon_N^2$''.
+\item The sentence on repeated cross-sections (``and the error between the
+  error term'') is garbled. Write: ``For repeated cross-sections the conditions
+  are analogous, with two additions: $\E[Y^2\mid X]\le C$ and $|\E[YU]|\le C$.
+  The exact wording is in the appendix.''
+\item The limit theorem should be attributed and use convergence in
+  distribution:
+\end{itemize}
+\begin{ins}
+\textcite[Theorems~3.1 and~3.2]{chang2020double} shows that if these conditions
+hold with $\varepsilon_N=o(N^{-1/4})$, then
+\[
+  \sqrt N(\tilde\theta-\theta_0)\xrightarrow{d}N(0,\Sigma),
+\]
+with $\Sigma=\Sigma_{10}$ for repeated outcomes and $\Sigma=\Sigma_{20}$ for
+repeated cross-sections, and that the variances are consistently estimated by
+\begin{align*}
+  \hat\Sigma_1&=\frac1K\sum_{k=1}^K\E_{n,k}\Big[\big(\psi_1(W,\tilde\theta,\hat p_k,\hat\eta_{1k})
+     +\hat G_{1p}(D-\hat p_k)\big)^2\Big],\\
+  \hat\Sigma_2&=\frac1K\sum_{k=1}^K\E_{n,k}\Big[\big(\psi_2(W,\tilde\theta,\hat p_k,\hat\lambda_k,\hat\eta_{2k})
+     +\hat G_{2p}(D-\hat p_k)+\hat G_{2\lambda}(T-\hat\lambda_k)\big)^2\Big],
+\end{align*}
+where $\E_{n,k}[f(W)]=n^{-1}\sum_{i\in I_k}f(W_i)$,
+$\hat G_{1p}=\hat G_{2p}=-\tilde\theta/\hat p_k$, and $\hat G_{2\lambda}$ is the
+sample analogue of
+\[
+  G_{2\lambda_0}=\E[\partial_\lambda\psi_2]
+  =-\frac{(1-2\lambda_0)\theta_0+\E\big[Y(D-g_0)/\{p_0(1-g_0)\}\big]}{\lambda_0(1-\lambda_0)} .
+\]
+\end{ins}
+\note{$\hat G_{2\lambda}$ is used but never defined in v13. I derived the
+expression above from $\psi_2$; it agrees with the display in your appendix
+(p.~41). Check that your code uses the same expression.}
+
+\paragraph{M7 (p.~10). Section 3.3.}
+\begin{itemize}
+\item Say that $q_i$ contains a constant whose coefficient is not penalised, in
+  both regressions. Lemma~10 and the pooling result rely on it.
+\item ``the penalty $\lambda$ can be either cross-validated or implemented in a
+  plug-in form Belloni and Chernozhukov (2011)'': the plug-in rule for the logit
+  Lasso is from \textcite{belloni2016post}, and the rule with loadings for the
+  outcome Lasso is from \textcite{belloni2012sparse}, which is also what Chang
+  cites.
+\item The loadings are called $\gamma_{kj}$, but $\gamma$ is the vector of
+  propensity coefficients from Section~4.1 on. Call the loadings
+  $\hat\psi_{kj}$, as in Section~5.
+\item Last sentence: the reference for the refit is
+  \textcite{belloni2013least}, not Belloni et al.\ (2014).
+\end{itemize}
+Replacement for the last four sentences of Section~3.3:
+\begin{ins}
+Chang plugs the penalised fits into the score directly, without refitting; in
+his application, the penalty is chosen by cross-validation. In this thesis, I
+instead refit each nuisance without a penalty on its own selected support
+(post-Lasso; \cite{belloni2013least}). The refit removes the shrinkage of the
+selected coefficients, which turns out to be a large source of bias in
+Section~\ref{sec:mc}, where I report both versions. Neither version is
+post-double-selection \parencite{belloni2014inference}, the estimator that
+\textcite{kolesar2026fragility} study. In post-double-selection, the covariates
+selected by a Lasso of the outcome and by a Lasso of the treatment are pooled and
+enter one OLS regression. In DML-DiD, each fitted nuisance enters the orthogonal
+score as a prediction, and cross-fitting replaces the OLS step.
+\end{ins}
+
+\subsection{Section 4, up to Proposition 8 (pp.~10--14)}
+
+\paragraph{M8 (p.~11).} The sentence ``For DML-DiD, it is enough \dots\ product of
+the two sparsity indices'' appears twice. Delete the second one (``For DML-DiD,
+it is enough to require \dots\ Smucler et al., 2019)'') and keep ``I will start by
+investigating \dots''.
+
+\paragraph{M9 (p.~12). Lemma 4.}
+The first ``$\equiv$'' should be ``$=$'' (it is the claim, not a definition), a
+closing bracket is missing, and the bound should have $\kappa'$, the constant of
+the lemma, not $\kappa$. ``6 below translates'' should be ``Proposition~6 below
+translates''.
+\begin{ins}
+\begin{lemma}[Mixed bias] % \label{lem:bias}
+Let $g$ and $\ell$ be fixed functions with $\kappa'\le g\le1-\kappa'$ for some
+$\kappa'\in(0,1/2]$. Then
+\[
+  \E[\psi_1(W,\theta_0,p_0,g,\ell)]=B_1(g,\ell)\equiv
+  \E\!\left[\frac{(\ell-\ell_{10})(g-g_0)}{p_0(1-g)}\right],
+  \qquad
+  |B_1(g,\ell)|\le\frac{\|g-g_0\|\,\|\ell-\ell_{10}\|}{p_0\kappa'} .
+\]
+For repeated cross-sections, the same holds with $\psi_2$ and $\ell_{20}$ in
+place of $\psi_1$ and $\ell_{10}$, and an additional factor
+$1/\{\lambda_0(1-\lambda_0)\}$.
+\end{lemma}
+\end{ins}
+\note{``The proof can be found in the appendix'': I could not find a proof of
+Lemma~4 in the appendix of v13. Here is one; put it before Lemma~25.}
+\begin{ins}
+\begin{proof}[Proof of Lemma~\ref{lem:bias}]
+Write $\Delta Y=Y(1)-Y(0)$ and $m_1(X)=\E[\Delta Y\mid X,D=1]$. Conditional on
+$X$, a unit is treated with probability $g_0$, and $(D-g)/(1-g)$ equals $1$ for a
+treated and $-g/(1-g)$ for an untreated unit. Hence
+\[
+  \E\Big[(\Delta Y-\ell)\frac{D-g}{1-g}\,\Big|\,X\Big]
+  =g_0(m_1-\ell)-(1-g_0)\frac{g}{1-g}(\ell_{10}-\ell).
+\]
+At $(g,\ell)=(g_0,\ell_{10})$ this is $g_0(m_1-\ell_{10})$, and
+$\theta_0=\E[g_0(m_1-\ell_{10})]/p_0$. Subtracting,
+\[
+  p_0\,\E[\psi_1(W,\theta_0,p_0,g,\ell)]
+  =\E\Big[(\ell_{10}-\ell)\Big(g_0-\frac{(1-g_0)g}{1-g}\Big)\Big]
+  =\E\Big[\frac{(\ell_{10}-\ell)(g_0-g)}{1-g}\Big],
+\]
+which is the identity. The bound follows from $1-g\ge\kappa'$ and the
+Cauchy--Schwarz inequality. For repeated cross-sections, replace $\Delta Y$ by
+$(T-\lambda_0)Y/\{\lambda_0(1-\lambda_0)\}$ and $\ell$ by
+$\ell/\{\lambda_0(1-\lambda_0)\}$.
+\end{proof}
+\end{ins}
+
+\paragraph{M10 (p.~12). The paragraph after Assumption 5.}
+The paragraph cites results for the plain Lasso with Gaussian errors
+(Belloni and Chernozhukov 2011, Corollary~1) and for a differently tuned logit
+Lasso (van de Geer 2008). Your first steps are post-Lasso with data-driven
+loadings and a logit post-Lasso with the plug-in penalty, so cite the results
+for those estimators. Also ``the lasso first steps with root in this basis'' in
+Assumption~5 should be ``the Lasso first steps computed in this basis''.
+\begin{ins}
+For the outcome nuisance, the assumption follows from
+\textcite[Theorems~1 and~2]{belloni2012sparse}, for the Lasso and for post-Lasso,
+which allow non-Gaussian, heteroskedastic errors with the data-driven penalty
+loadings used in Section~\ref{sec:mc}; with Gaussian, homoskedastic errors, see
+\textcite[Corollaries~1 and~3]{belloni2011high}. These rates are stated in the
+empirical prediction norm on the estimation sample. They carry over to the
+population norm because the post-Lasso error is sparse, with at most $\hat s+s$
+non-zero coordinates and $\hat s\lesssim s$, and because, with probability
+approaching one, the sparse eigenvalues of the empirical Gram matrix are within
+constant factors of the population ones, for Gaussian as well as bounded designs
+\parencite[Lemmas~1 and~2]{belloni2011high}. The outcome Lasso uses only control
+observations, so these conditions and the rate refer to the covariate
+distribution of the controls. Under overlap, the rate carries over to the full
+population, since $dP_X/dP_{X\mid D=0}=(1-p_0)/(1-g_0)\le(1-p_0)/\kappa$. For the
+propensity score, the assumption follows from
+\textcite[Appendix~B.2, Lemmas~1 and~2]{belloni2016post}, for the logit Lasso and
+its post-Lasso refit. Their rate is in the prediction norm weighted by
+$g_0(1-g_0)\ge\kappa(1-\kappa)$, and since $|\Lambda(a)-\Lambda(b)|\le|a-b|/4$, it
+implies the rate for $\hat g_k$. Their result needs an identifiability
+condition, which for general bounded designs holds if
+$s_g^2\log(p\vee N)=o(N)$. The assumed rates are upper bounds on the estimation
+error; smaller sparsity indices give faster rates.
+\end{ins}
+\note{I checked these theorem and lemma numbers against the arXiv versions
+(1010.4345, 1106.5242, 1304.3969). Check them against the published versions
+before you submit, since numbering sometimes changes.}
+
+\paragraph{M11 (pp.~12--13). Proposition 6 and the text around it.}
+\begin{itemize}
+\item ``for $c=\{g,\ell\}$'' should be ``for $c\in\{g,\ell\}$'', and
+  $\hat\ell_k$ should be $\hat\ell_{1k}$ as elsewhere.
+\item ``Conversely, 6(b) follows by \dots'': it is not a converse. Write
+  ``Part~(b) follows by multiplying the two rates.''
+\item ``this implies $s_g\log[p]=s_\ell\log[p]=o(\sqrt N)$'' asserts that the two
+  indices are equal. Write ``this requires $s_g\log p=o(\sqrt N)$ and
+  $s_\ell\log p=o(\sqrt N)$''.
+\item The product condition is not new and the text should say so, see
+  Part~\ref{sec:obvious}. Add after the proposition:
+\end{itemize}
+\begin{ins}
+The product condition is the one \textcite[Remark~5.2]{chernozhukov2018double}
+give for the average treatment effect on the treated in a cross-section, and the
+one \textcite{farrell2015robust} and \textcite{smucler2019unifying} obtain for
+doubly robust estimators: if the propensity score is very sparse, the outcome
+regression may be quite dense, and vice versa.
+\textcite[footnote~13]{kolesar2026fragility} note that it replaces their
+condition \eqref{eq:sparsity2} under cross-fitting, and that such assumptions on
+the propensity score are likewise sensitive to the normalisation of the
+controls. The rest of this section works out that remark for DML-DiD.
+\end{ins}
+
+\paragraph{M12 (p.~13). Proposition 7 (wrong as printed in (b)).}
+In (b), ``$0\le1$'' has lost the $h$; the upper bound on $g_N$ is $1-\kappa/2$,
+not $1/2-\kappa/2$; the two norms are deterministic, so $O$, not $O_P$; and the
+proof shows $\{1+o_P(1)\}$, not $\{1-o_P(1)\}$. In (a), ``for all $k\in K$''
+should be ``for all $k$''. In (c), $z_{1-a/2}$ should be $z_{1-\alpha/2}$.
+\begin{ins}
+\begin{proposition}[Rate failures] % \label{prop:ratefail}
+Suppose RO(i)--RO(iii) and Assumption~\ref{ass:chang}(a)--(e) hold, and let
+$b,c>0$ with $b+c<1/2$.
+\begin{enumerate}
+\item[(a)] If, with probability $1-o(1)$, $\|\hat g_k-1/2\|_{P,\infty}\le1/2-\kappa$
+  for all $k$, and $\|\hat g_k-g_0\|=O_P(N^{-b})$ and
+  $\|\hat\ell_{1k}-\ell_{10}\|=O_P(N^{-c})$, then
+  $\tilde\theta-\theta_0=O_P(N^{-(b+c)})$.
+\item[(b)] Let $h=h(X)$ satisfy $0\le h\le1$ and $\E[h^2]>0$, and let
+  $g_N=g_0+N^{-b}h$ and $\ell_N=\ell_{10}+N^{-c}h$. Then
+  $\|g_N-g_0\|=O(N^{-b})$, $\|\ell_N-\ell_{10}\|=O(N^{-c})$, and
+  $\kappa/2\le g_N\le1-\kappa/2$ for $N\ge(2/\kappa)^{1/b}$. If
+  $(\hat g_k,\hat\ell_{1k})=(g_N,\ell_N)$ for all $k$, then
+  \[
+    \tilde\theta-\theta_0=B_1(g_N,\ell_N)\{1+o_P(1)\},\qquad
+    B_1(g_N,\ell_N)\ge N^{-(b+c)}\,\E[h^2]/p_0 .
+  \]
+\item[(c)] In the setting of (b),
+  $\Pr\big(\theta_0\in\big[\tilde\theta\pm z_{1-\alpha/2}(\hat\Sigma_1/N)^{1/2}\big]\big)\to0$.
+\end{enumerate}
+\end{proposition}
+The proof is in the appendix. Part~(a) says that the error of DML-DiD is at most
+of the order of the product of the two first-step errors. Parts~(b) and~(c) show
+that this order can be attained, and that the confidence interval then misses
+$\theta_0$ with probability approaching one. The sequence in (b) is a worst
+case: the two errors are proportional to the same function $h$, so their product
+has one sign everywhere. Errors of an actual Lasso need not line up in this way.
+Proposition~\ref{prop:stein} below shows what lining up means for coefficient
+vectors, and D2 and D3 compare the two cases.
+\end{ins}
+
+\paragraph{M13 (p.~13). The paragraph after Proposition 8.}
+``This proposition assesses what happens \dots\ when the nuisance estimators both
+converge slowly'' (after Proposition~7) is imprecise: one of them may converge
+fast; what matters is $b+c$. After Proposition~8, ``in the proof of'' starts a
+sentence in lower case, ``27(ii)'' needs ``Lemma'', and what uses
+$\hat\Sigma_1=O_P(1)$ is Proposition~7(c). Replacement:
+\begin{ins}
+The proof is Lemma~\ref{lem:variance} in the appendix.
+Propositions~\ref{prop:ratefail} and~\ref{prop:ratedr} are two sides of the same
+calculation. In terms of the rates $N^{-b}$ and $N^{-c}$ of the two first steps,
+$b+c>1/2$ suffices for a valid limit distribution, while $b+c<1/2$ can make
+coverage go to zero. At $b+c=1/2$ the bias is of the same order as the standard
+error, so coverage is distorted but need not go to zero.
+
+Proposition~\ref{prop:ratedr} concerns the estimator. For the interval
+$\tilde\theta\pm z_{1-\alpha/2}(\hat\Sigma_1/N)^{1/2}$ to have asymptotic coverage
+$1-\alpha$, the variance estimator must also be consistent. In the proof of
+\textcite[Theorem~3.2]{chernozhukov2018double}, the error of the variance
+estimator depends only on how fast each first step converges, not on the product
+of their errors, so consistency of $\hat g_k$ and $\hat\ell_{1k}$ is enough. I do
+not prove this here. Lemma~\ref{lem:consist}(ii) shows the weaker statement
+$\hat\Sigma_1=O_P(1)$, which is what Proposition~\ref{prop:ratefail}(c) needs.
+
+Proposition~\ref{prop:ratedr} is the result of
+\textcite[Theorem~5.1]{chernozhukov2018double} for the average treatment effect
+on the treated, applied to the change in outcomes: $\psi_1$ is their score (5.4)
+with $Y$ replaced by $Y(1)-Y(0)$, except that $\theta$ enters as $-\theta$
+instead of $-D\theta/p$. Their rate condition for this score involves only the
+product of the two errors. Chang instead uses their general condition (3.7)--(3.8),
+which bounds every error by one sequence $\varepsilon_N=o(N^{-1/4})$ and, in his
+Assumption~3.1, adds the squared propensity error. Lemma~\ref{lem:bias} shows
+that the squared propensity error does not enter the bias of $\psi_1$, so the
+weaker condition suffices. The product condition guarantees validity in the
+limit; D2 shows that close to the boundary $b+c=1/2$ convergence can be too slow
+to be visible at realistic sample sizes.
+\end{ins}
+\note{This replaces the two paragraphs from ``The proof is in the appendix.
+Proposition 7 and proposition 8 are two sides \dots'' to ``\dots bounds all rates
+by a single $\varepsilon_N$'' (pp.~13--14).}
+
+\subsection{Section 4.1: non-sparse data (pp.~14--15)}
+
+\paragraph{M14 (p.~14). The proof of the Remark has a wrong step (wrong as printed).}
+``the numerator simplifies to
+$\mathrm{Cov}(g_0,\ell_{10})=p_0/(1-p_0)(\E[\ell_{10}\mid D=0])$'' is not true.
+Also make the Remark a numbered environment: ``as per~.'' on p.~20 is an empty
+reference because the Remark has no number.
+\begin{ins}
+\begin{proof}
+By Lemma~\ref{lem:bias},
+$B_1(p_0,c)=\E[(c-\ell_{10})(p_0-g_0)]/\{p_0(1-p_0)\}$. Since $\E[g_0]=p_0$, the
+constant $c$ drops out and the numerator equals
+$\operatorname{Cov}(g_0,\ell_{10})$. Further,
+$\E[g_0\ell_{10}]=\E[D\ell_{10}]=p_0\E[\ell_{10}\mid D=1]$ and
+$\E[\ell_{10}]=p_0\E[\ell_{10}\mid D=1]+(1-p_0)\E[\ell_{10}\mid D=0]$, so
+$\operatorname{Cov}(g_0,\ell_{10})=p_0(1-p_0)\{\E[\ell_{10}\mid D=1]-\E[\ell_{10}\mid D=0]\}$.
+The last claim is Stein's lemma, $\E[Xf(X)]=\E[\nabla f(X)]$ for
+$X\sim N(0,I_p)$, applied to $f(X)=\Lambda(a+X'\gamma)$.
+\end{proof}
+\end{ins}
+
+\paragraph{M15 (pp.~14--15). Proposition 9: notation, and a simpler form.}
+\begin{itemize}
+\item $w$ is used both for the function $w(X)$ and for its mean, but
+  $\E[Xw]$ and $\nabla w$ need the function.
+\item $c_1$ and $c_2$ are defined as expectations, but the proof writes
+  ``$=c_1\gamma+c_2\Delta\gamma$'' for the expression inside the expectation.
+\item The third line of the proof has $\Lambda(a-X'\gamma)$; it is
+  $\Lambda(a+X'\gamma)$.
+\item $\gamma\Delta\delta$ and $\Delta\gamma\Delta\delta$ are inner products and
+  need transposes.
+\item $c_1,c_2$ are also the names of the adjustment terms in $\psi_1,\psi_2$
+  (p.~7) and of the three terms in Proposition~12.
+\end{itemize}
+While checking the proof I noticed that the two constants simplify, because
+$\Lambda'=\Lambda(1-\Lambda)$:
+\[
+  \Lambda'(\hat z)(1-g_0)-\Lambda'(z)(1-\hat g)=(1-\hat g)(1-g_0)(\hat g-g_0),
+  \qquad
+  \frac{\Lambda'(\hat z)(1-g_0)}{(1-\hat g)^2}=\frac{\hat g(1-g_0)}{1-\hat g}.
+\]
+With this, the constants can be read: $\bar c_2=1$ and $\bar c_1=0$ when
+$\hat g=g_0$, and the statement about ``$c_1$ is small'' becomes exact. I
+recommend this version (statement, proof and the text after it, replacing
+everything from Proposition~9 to ``\dots can cancel in case not.''):
+\begin{ins}
+\begin{proposition}[Bias in the Gaussian design] % \label{prop:stein}
+In this design,
+\[
+  B_1(\hat g,\hat\ell)=\bar c_2\,\Delta\gamma'\Delta\delta+\bar c_1\,\gamma'\Delta\delta+(\hat b-b)\,\bar w ,
+\]
+where, with $w(X)=(\hat g-g_0)/\{p_0(1-\hat g)\}$,
+\[
+  \bar w=\E[w(X)],\qquad
+  \bar c_1=\E\big[(1-g_0)\,w(X)\big],\qquad
+  \bar c_2=\E\left[\frac{\hat g\,(1-g_0)}{p_0(1-\hat g)}\right].
+\]
+\end{proposition}
+\begin{proof}
+By Lemma~\ref{lem:bias} and $\hat\ell-\ell_{10}=(\hat b-b)+X'\Delta\delta$,
+$B_1=\E[(\hat\ell-\ell_{10})\,w(X)]=(\hat b-b)\bar w+\Delta\delta'\E[X\,w(X)]$, and
+by Stein's lemma $\E[X\,w(X)]=\E[\nabla w(X)]$. Since
+$\hat g-g_0=(1-g_0)-(1-\hat g)$, we can write
+$w=p_0^{-1}\{(1-g_0)/(1-\hat g)-1\}$. With
+$\nabla\hat g=\hat g(1-\hat g)\hat\gamma$ and $\nabla g_0=g_0(1-g_0)\gamma$,
+\[
+  \nabla w=\frac{(1-g_0)\hat g(1-\hat g)\hat\gamma-g_0(1-g_0)(1-\hat g)\gamma}{p_0(1-\hat g)^2}
+  =\frac{(1-g_0)\,(\hat g\,\hat\gamma-g_0\,\gamma)}{p_0(1-\hat g)} .
+\]
+Substituting $\hat\gamma=\gamma+\Delta\gamma$ gives
+$\nabla w=\frac{(1-g_0)(\hat g-g_0)}{p_0(1-\hat g)}\gamma+\frac{\hat g(1-g_0)}{p_0(1-\hat g)}\Delta\gamma$,
+and taking expectations gives the result.
+\end{proof}
+The three terms have a clear reading. The first is the inner product of the two
+coefficient errors. The second and third are weighted averages of the signed
+propensity error $\hat g-g_0$; they vanish when the propensity score is correct,
+where $\bar c_2=\E[g_0]/p_0=1$. If both first steps fit only intercepts, then
+$\Delta\gamma=-\gamma$, $\Delta\delta=-\delta$, $\bar w=0$, $\bar c_2=1$ and
+$\bar c_1=\operatorname{Var}(g_0)/\{p_0(1-p_0)\}$, and the proposition
+reproduces the Remark. When $\hat g$ is close to $g_0$, the bias is therefore
+approximately the inner product of the two coefficient errors,
+\begin{equation}\label{eq:inner}
+  B_1\approx\bar c_2\sum_{j=1}^p\Delta\gamma_j\,\Delta\delta_j .
+\end{equation}
+For post-Lasso, the first step used in this thesis, the refit estimates the
+selected coefficients without shrinkage, so
+$\Delta\gamma_j\approx-\gamma_j\mathbf 1\{j\notin\hat S_g\}$,
+$\Delta\delta_j\approx-\delta_j\mathbf 1\{j\notin\hat S_\ell\}$ and
+\begin{equation}\label{eq:both}
+  B_1\approx\bar c_2\sum_{j\notin\hat S_g\cup\hat S_\ell}\gamma_j\,\delta_j .
+\end{equation}
+Only covariates that \emph{both} fits omit contribute. This is the DML-DiD
+analogue of the double under-selection that \textcite{wuthrich2023omitted}
+identify for post-double-selection. Without the refit, as in Chang's
+specification, products of the shrinkages of the selected coefficients are
+added. In DiD terms, $\gamma_j$ measures how covariate $j$ drives selection into
+treatment and $\delta_j$ how it drives the untreated trend. The bias comes from
+covariates that do both and that both fits miss. It is large when the products
+$\gamma_j\delta_j$ share a sign (\emph{aligned} errors, as in
+Proposition~\ref{prop:ratefail}(b)) and largely cancels otherwise. D2 and D3
+test \eqref{eq:inner} and \eqref{eq:both}.
+\end{ins}
+\note{Your code computes $c_1$ and $c_2$ in the old form. The two forms are
+algebraically identical, so the numbers in the tables do not change.}
+
+\subsection{Section 4.2: the basis (pp.~15--19)}
+
+\paragraph{M16 (p.~16). Lemma 10.}
+The statement ends ``are in the same bases, $q$ and $\tilde q$'' and has
+$\hat g_K$; ``hold the number of folds fixed'' should be ``hold the folds
+fixed''; the first line of the proof stops in the middle; the sentence about the
+Lasso belongs after the proof; and the lemma needs the intercept and the
+existence of the logit estimate. The caveats are needed in Section~6, where you
+drop a product group that has no controls.
+\begin{ins}
+\begin{lemma}[Invariance of unpenalised first steps] % \label{lem:invariance}
+Let $q_i$ contain an intercept, let $\tilde q=Aq$ with $A$ invertible, and hold
+the folds fixed. Let $\hat g_k$ be the unpenalised logit fit and $\hat\ell_{1k}$
+the OLS fit on the controls, both computed on $I_k^c$, and suppose the logit
+estimate exists. Then $\hat g_k$ and $\hat\ell_{1k}$, and hence $\tilde\theta$,
+are the same in the bases $q$ and $\tilde q$.
+\end{lemma}
+\begin{proof}
+For every $\beta$, $q'\beta=\tilde q'\tilde\beta$ with
+$\tilde\beta=(A')^{-1}\beta$. The logit log-likelihood and the least-squares
+criterion depend on the coefficients only through the index $q'\beta$. Hence
+$\tilde\beta$ minimises the criterion in the basis $\tilde q$ exactly when
+$A'\tilde\beta$ minimises it in the basis $q$, and the fitted values coincide.
+\end{proof}
+The Lasso adds the penalty $\lambda\sum_j\hat\psi_j|\tilde\beta_j|$, which is not
+a function of the index alone, so the argument fails. The same argument shows
+that a Lasso fit is invariant to a change of basis that only involves columns
+whose coefficients are not penalised, for example a change of reference
+category among dummies that are forced into the model. Lemma~\ref{lem:invariance}
+is the DiD counterpart of the observation of \textcite{kolesar2026fragility} that
+OLS is invariant to the representation: with unpenalised first steps,
+$\mathcal R(\mathcal A)=0$. There are two caveats. The logit estimate does not
+exist when some category contains only treated or only untreated units, and when
+the number of columns is not small relative to the sample it is badly biased
+\parencite{sur2019modern}. Outcome-regression DiD (OR-DiD), which needs only OLS
+among the controls, is invariant whenever the controls outnumber the columns of
+the dictionary and every category contains controls.
+\end{ins}
+
+\paragraph{M17 (p.~16). Lemma 11.} Correct. Two notational points: the
+difference of the two fits is called $\delta_g$ in the statement and $\delta$ in
+the bound and in the sentence after it, and $\delta$ is the vector of trend
+coefficients everywhere else. Call it $\Delta g$, as Proposition~12 does. ``Let
+$g,g'<1$'' can simply be ``Let $g,g'\in[\kappa,1-\kappa]$'' from the start.
+
+\paragraph{M18 (pp.~16--17). Proposition 12 (wrong as printed: ``$=$'' for ``$\le$'').}
+\begin{itemize}
+\item The bound is written with ``$=$''. It is an inequality, and the sum needs
+  brackets around all three terms:
+  \begin{multline*}
+  \big|\tilde\theta^{(A)}-\tilde\theta^{(A_0)}\big|\le\max_k\frac1{\hat p_k}\frac1n\sum_{i\in I_k}
+  \bigg(\|\Delta g_k\|_{P,\infty}\frac{(1-D_i)\big|\Delta Y_i-\hat\ell_k^{(A_0)}\big|}{\kappa^2}\\
+  +\|\Delta g_k\|_{P,\infty}\frac{(1-D_i)|\Delta\ell_k|}{\kappa^2}+\frac{|\Delta\ell_k|}{\kappa}\bigg).
+  \end{multline*}
+\item The title ``Estimator bias in response to basis shift'' and ``the
+  deviance in the estimators'' and ``The bound of the bias'': nothing here is a
+  bias. It is the \emph{difference between two estimates}. Title: ``Change of the
+  estimate under a change of basis''.
+\item ``$\Delta\ell_k\equiv\hat\ell_j^{(A)}-\hat\ell_j^{A_0}$, $j=\{1,2\}$'' should
+  be $\Delta\ell_k\equiv\hat\ell_{1k}^{(A)}-\hat\ell_{1k}^{(A_0)}$.
+\item The three terms are named $c_1,c_2,c_3$; see M15.
+\item In $\mathcal R(\mathcal A)$, say which variance: ``$\hat\Sigma_1^{(A_0)}$,
+  the variance estimate in the reference basis $A_0$''.
+\item ``If the rate conditions hold uniformly over a fixed and finite set of
+  bases, the first order terms in (12) vanish, and
+  $\mathcal R(\mathcal A)=o_p(1)$'': the conclusion is right, but it does not
+  follow from Proposition~12. It follows from Lemma~26. Replacement:
+\end{itemize}
+\begin{ins}
+If the conditions of Proposition~\ref{prop:ratedr} hold in every basis of a
+fixed, finite set $\mathcal A$, then by Lemma~\ref{lem:variance} every
+$\tilde\theta^{(A)}$ has the same expansion
+$N^{-1}\sum_i\varphi(W_i)+o_P(N^{-1/2})$, which does not depend on the basis.
+The estimates then differ by $o_P(N^{-1/2})$, and
+$\mathcal R(\mathcal A)=o_P(1)$. A range that is not small relative to one
+standard error is therefore evidence that the rate conditions, and in this
+context sparsity, fail in at least one of the bases.
+\end{ins}
+
+\paragraph{M19 (p.~17). ``INDSÆT HER''.} The running example goes here; the text
+and the table are in Part~\ref{sec:pool-ins}. ``To formalise this insight,
+consider the following lemma'' introduces a proposition.
+
+\paragraph{M20 (p.~17--18). Proposition 13 (wrong as printed).}
+\begin{itemize}
+\item The sum over the pools is missing in the display. As printed, $B_1$ is
+  the contribution of a single, unspecified pool $G$.
+\item ``suppose both full and threshold coding, and that'' is not a sentence.
+  It should be ``suppose, as holds for reference and threshold coding, that''.
+\item ``if their rows are similar'' should be ``if their rows agree''.
+\item The proof has a sign error:
+  $\E[(\hat\ell-\ell_{10})(\hat g_G-g_0)\mid Z\in G]$ equals
+  $\operatorname{Cov}(\ell_{10}-\hat\ell,g_0\mid Z\in G)$, not
+  $\operatorname{Cov}(\hat\ell-\ell_{10},g_0\mid Z\in G)$. (The statement has the
+  right sign.)
+\item ``with a reference category spans all functions of $Z$'': it is the
+  intercept together with the columns that spans them.
+\end{itemize}
+The corrected statement and proof are in Part~\ref{sec:pool-ins}.
+
+\paragraph{M21 (p.~18). Corollary 14 and the two remarks.}
+The corollary and its proof are correct (``If it atypical in both'' needs
+``is''). Remark~1 ends with a wrong conclusion \textbf{(wrong as printed)}:
+``An unlucky choice of category therefore matters when it is large, i.e.\ when
+it comprises a majority of the observations.'' The condition you derive in the
+sentence before is that $\pi_b\sqrt N$ is not small. In D4a, a reference
+category with 5\% of the sample gives coverage 0.77 at $N=4000$, and one with
+15\% gives 0.06. Corrected remarks are in Part~\ref{sec:pool-ins}.
+
+\subsection{Appendix (pp.~28--44)}
+
+\paragraph{M22 (pp.~28--29). Chebyshev.}
+Definition~18 has $t\sigma_X^2$; it is $t\sigma_X$. In the proof of Lemma~19,
+``Since both $\Pr(|X-\E(X)|\ge t)$ and $\mathrm{Var}(X)/t^2$ are positive'' is not
+the reason the two events are equal. The reason is that $t>0$ and
+$x\mapsto x^2$ is increasing on $[0,\infty)$. (I recommend cutting this
+material altogether, see Part~\ref{sec:obvious}.)
+
+\paragraph{M23 (pp.~33--35). Lemma 25.} The decomposition and its proof are
+correct. Fix: ``Lemma (4)'' twice (it prints like an equation number);
+``$\hat p_k$ is the mean of $N-n$ Bernoulli($p_0$) variables'' should be $n$
+(M4); and before ``On the event that $\{\hat p_k\ge p_0/2\}$'' add ``whose
+probability tends to one, since $\hat p_k\xrightarrow{p}p_0>0$''. The step
+$\E[\psi_1^2]\le\E[(\psi_1+\theta_0)^2]$ is true only because $\E[\psi_1]=0$;
+say so.
+
+\paragraph{M24 (p.~35). Lemma 26.}
+\begin{itemize}
+\item The title is ``The variance estimator''; the lemma is asymptotic
+  linearity.
+\item ``Fix number of folds $k$'' should be ``Fix a fold $k$''. In (i) a bracket
+  is missing. In (ii) ``On the event that
+  $\Pr(\{\kappa'\le\hat g_k\le1-\kappa'\})\to1$'' should be ``On the event
+  $\{\kappa'\le\hat g_k\le1-\kappa'\}$, whose probability tends to one''.
+\item Step (v) is garbled, and the sentence after the display argues with
+  auxiliary samples, which you no longer use for $\hat p_k$.
+\end{itemize}
+Replacement for (v) and the rest of the proof:
+\begin{ins}
+(v) Since
+$p_0/\hat p_k-1=-(\hat p_k-p_0)/p_0+(\hat p_k-p_0)^2/(p_0\hat p_k)
+=-(\hat p_k-p_0)/p_0+O_P(N^{-1})$ and $\hat p_k-p_0=\E_{n,k}[D-p_0]$,
+\[
+  \tilde\theta_k-\theta_0=\E_{n,k}\Big[\psi_1(W,\theta_0,p_0,\eta_{10})-\frac{\theta_0}{p_0}(D-p_0)\Big]+o_P(N^{-1/2})
+  =\E_{n,k}[\varphi(W)]+o_P(N^{-1/2}).
+\]
+The folds partition the sample and have the same size $n=N/K$, so averaging over
+$k$ gives $\tilde\theta-\theta_0=N^{-1}\sum_{i=1}^N\varphi(W_i)+o_P(N^{-1/2})$.
+$\varphi$ has mean zero, since $\E[\psi_1(W,\theta_0,p_0,\eta_{10})]=0$ and
+$\E[D]=p_0$. Its variance is finite by overlap and
+Assumption~\ref{ass:chang}(d), and positive by
+Assumption~\ref{ass:chang}(e). The central limit theorem completes the proof.
+\end{ins}
+
+\paragraph{M25 (pp.~36--37). Lemma 27.} The proof is correct. Fix:
+\begin{itemize}
+\item Statement: ``the set $\Pr(A_k(\kappa'))\to1$'' should be
+  ``$\Pr(A_k(\kappa'))\to1$'', and $\delta_{g,k}\equiv\hat g_k-g_0$,
+  $\delta_{\ell,k}\equiv\hat\ell_{1k}-\ell_{10}$ must be defined in the statement.
+  There is a stray ``. :'' before (i).
+\item First display of the proof: both terms should be multiplied by $p_0$, i.e.\
+  ``$-p_0\theta_0$'' twice (they cancel, so nothing else changes).
+\item ``by using lemma ??'' is Lemma~11.
+\item In the display for $\E[(\Delta\psi)^2]$, the factor $1/p_0$ belongs to both
+  terms and the second term has a minus sign:
+  $\Delta\psi=p_0^{-1}\{(w_g-w_0)V_1-w_g\delta_\ell\}$. The bound in the next step
+  is unaffected. The line with the absolute value around the whole expression is
+  redundant.
+\item ``On the set $A_k(\kappa')$, which per construction depends on the
+  auxiliary sample $I_k^c$, the On $A_k(\kappa')$, which depends only on
+  $I_k^c$'': delete the first half. ``since we assumed that
+  $\|\delta_g\|,\|\delta_g\|=o_P(1)$'': the second is $\delta_\ell$.
+\item (ii): ``Using the variance form in lemma 26'' should be ``Using the
+  definition of $\hat\Sigma_1$''. ``$4/(\hat p_k^2\kappa'^2)$ and $2\tilde\theta$''
+  should be $2\tilde\theta^2$. The citation ``(vandervaart)'' for ``it is enough
+  to show that the variance within each fold is bounded'' is not needed: a
+  finite sum of $O_P(1)$ terms is $O_P(1)$.
+\end{itemize}
+
+\paragraph{M26 (pp.~38--41). Proof of Proposition 7.} Correct. Fix:
+\begin{itemize}
+\item Part (a) starts ``By assumption, $P(A_k(\kappa'))\to1$''. The assumption of
+  (a) is $A_k(\kappa)$.
+\item ``in order to transfer it to condition 3.1(d) in Chang'': the band is
+  part of condition (f) in Chang's Assumption~3.1, i.e.\ Assumption~3(f)(ii) in
+  your numbering; (d) is the bound on $\E[V_1^2\mid X]$.
+\item ``Where I have used that $0\le1-g_N\le1$'': you divide by $1-g_N$, so
+  $0<1-g_N\le1$.
+\item ``$B_1(g_N,\ell_N)=O(N^{-(b+c)})=o(1)$'': you have shown more, namely that
+  $B_1(g_N,\ell_N)$ is between $N^{-(b+c)}\E[h^2]/p_0$ and
+  $2N^{-(b+c)}\E[h^2]/(p_0\kappa)$. Say that; it is what (b) claims.
+\item The display for the average over folds lacks brackets and the term
+  $(p_0/\hat p_k-1)\theta_0$; write
+  ``$\tilde\theta-\theta_0=B_1(g_N,\ell_N)+O_P(N^{-1/2})$ by averaging the
+  previous display over $k$''.
+\item Part (c): $T_N$ is first defined as an inequality (``$T_N=\sqrt N|\tilde\theta-\theta_0|\le\hat\sigma z$'').
+  Define the statistic $T_N\equiv\sqrt N|\tilde\theta-\theta_0|$ and the coverage
+  event $\{T_N\le z\hat\sigma\}$ separately.
+\item ``The set $T_N\le M\cap\{|(N^{-(b+c)}\E[h^2/p_0])(1-\delta)|\}$ is only
+  non-empty when \dots'' is not a set. Write: ``On
+  $\{|\rho/B_1(g_N,\ell_N)|\le\delta\}$ we have
+  $T_N\ge\sqrt N N^{-(b+c)}\E[h^2/p_0](1-\delta)$, so $\{T_N\le M\}$ can only
+  occur if this lower bound is at most $M$ or if
+  $|\rho/B_1(g_N,\ell_N)|>\delta$.''
+\item $\delta$ is again a new object here; use $\epsilon'$ or $\tau$.
+\end{itemize}
+
+\paragraph{M27 (p.~41). The paragraph on repeated cross-sections stops without a conclusion.}
+\begin{ins}
+The argument carries over to repeated cross-sections with $\psi_2$, $\ell_{20}$
+and $V_2$, and with the version of Lemma~\ref{lem:bias} that has the factor
+$1/\{\lambda_0(1-\lambda_0)\}$. One term is new. Unlike $\hat p_k$, which
+multiplies the whole fold average, $\hat\lambda_k$ enters the score itself, and
+the score is not orthogonal in $\lambda$. Conditional on $I_k^c$, $\hat\lambda_k$
+is fixed and shifts the conditional mean of the score by
+$G_{2\lambda_0}(\hat\lambda_k-\lambda_0)+O_P(N^{-1})=O_P(N^{-1/2})$, because
+$\hat\lambda_k$ is the mean of $N-n$ Bernoulli($\lambda_0$) variables. It also
+moves the target of the outcome Lasso, $\E[(T-\hat\lambda_k)Y\mid X,D=0]$, away
+from $\ell_{20}$ by $O_P(N^{-1/2})$. Since $b+c<1/2$, both are dominated by the
+bias of order $N^{-(b+c)}$, and parts (a)--(c) hold as stated. Under the
+conditions of Proposition~\ref{prop:ratedr}, the first of the two terms is of
+the same order as the leading term; it is the reason for the term
+$\hat G_{2\lambda}(T-\hat\lambda_k)$ in $\hat\Sigma_2$.
+\end{ins}
+
+\paragraph{M28 (pp.~42--44). Remaining.} ``On the $[\kappa,1.\kappa]$ bound''
+should be $[\kappa,1-\kappa]$; ``using lemma ??'' is Lemma~11; in the regularity
+conditions for repeated cross-sections, (a) should be
+$\Pr(\kappa\le g_0(X)\le1-\kappa)=1$, ``$D=g_o(X)+U$'' should be $g_0$, and the
+wording problems of M6 are repeated in (a), (b), (g) and (h).
+
+% =============================================================================
+\section{Inserts: title, introduction and Section 2}\label{sec:front}
+
+\subsection{Title and section titles}
+The title still reads ``My advisor told me sparsi ty was an assumption and he was
+right'', with a broken word; Section~5 is ``Monte Carlo shows I'm right'' and
+Section~6 ``Replication of a replication empirical application (say it fast
+twice)''. Unless your supervisor has agreed to these, replace them. Suggestions:
+\begin{itemize}
+\item Title: \emph{Sparsity is a choice: representation and bias in double machine
+  learning for difference-in-differences}. Plainer:
+  \emph{Double machine learning for difference-in-differences when sparsity
+  fails}.
+\item Section~4: \emph{Sparsity, representation and bias} (now ``Enter
+  sparsity'').
+\item Section~5: \emph{Simulation evidence}.
+\item Section~6: \emph{Chang's application revisited}.
+\item Section~7: \emph{Conclusion}.
+\end{itemize}
+
+\subsection{Introduction (pp.~1--3)}
+
+\where{p.~1, first sentence.}
+The comparison of the two London water companies before and after one of them
+moved its intake, which is the usual reference for the first
+difference-in-differences, is in the second edition of Snow's book, from 1855.
+The 1849 edition is a short pamphlet without it. Write ``Ever since John Snow's
+study of cholera in London \parencite{snow1855mode}, \dots''.
+
+\where{p.~1, second paragraph.}
+``which is why several add-ons exist'' is informal (``several extensions
+exist''), and ``heterogeneous treatment intensity, depending on the
+characteristics of the treated unit'' does not describe
+\textcite{callaway2024continuous}, which is about a treatment that varies in
+intensity (dose) across units. Write ``or allow the treatment to vary in
+intensity across units''.
+
+\where{p.~2: ``He shows that the resulting estimator, the DML-DiD, is valid
+whenever the first-step estimators converge faster than $N^{-1/4}$.''}
+\begin{ins}
+He shows that the resulting estimator, DML-DiD, is $\sqrt N$-consistent and
+asymptotically normal when both first-step estimators converge faster than
+$N^{-1/4}$.
+\end{ins}
+
+\where{p.~2: ``\textbf{kolesar<empty citation>} show that sparsity is \dots'' and
+the next paragraph.}
+The citation key is broken here (and for Abadie on pp.~6--7, Chang, Sequeira and
+Kolesár on pp.~24--25, Chernozhukov on p.~37, Pitman on pp.~28--29, van der
+Vaart on pp.~29 and~37). Search the source for \verb|{kolesar}|,
+\verb|{abadie}|, \verb|{chang}|, \verb|{sequeira}|, \verb|{chernozhukov}|,
+\verb|{pitman}| and \verb|{vandervaart}| and insert the full keys. In the same
+paragraph: ``sparsity-based ML method'' needs a plural, ``choices that does not
+affect'' should be ``do not'', and ``where the researcher choice enter'' should be
+``where the researcher's choices enter''.
+
+\where{p.~3, top: ``a representation that makes only one nuisances can be
+harmless \dots\ in the untreated change in outcomes.''}
+A word is missing in the second feature and the third is hard to follow.
+\begin{ins}
+Second, the bias depends on the \emph{product} of the two first-step errors: a
+representation that makes only one nuisance non-sparse can be harmless, while
+one that makes both non-sparse in the same direction is not. Third, the outcome
+nuisance is a trend rather than a level, so what has to be sparse is how the
+covariates shift the untreated \emph{change} in outcomes.
+\end{ins}
+
+\where{p.~3: the paragraph ``The thesis makes three contributions \dots'' and the
+outline after it.}
+Contribution (a) claims as new what is known (Part~\ref{sec:obvious}),
+contribution (b) leaves out the pooling result, and the outline is off by one
+section and promises a conclusion in ``section 6''.
+\begin{ins}
+The thesis makes three contributions. (a) It states the conditions for DML-DiD
+in terms of the product of the two first-step errors. That the product is what
+matters is known for doubly robust estimators
+\parencite{chernozhukov2018double,smucler2019unifying}; I show that it replaces
+Chang's requirement on each first step, and that coverage can go to zero when
+the product condition fails. (b) It derives the bias that a failure of sparsity
+creates. In a Gaussian design, the bias is the inner product of the two
+first-step coefficient errors. With categorical covariates and post-Lasso first
+steps, it is the covariance of selection and trends within the groups of
+categories that the Lasso pools. This makes precise when the choice of reference
+category matters: when the reference category differs from the categories it is
+pooled with in \emph{both} selection and trends, in proportion to its share of
+the sample. (c) It documents these mechanisms by simulation, and revisits
+Chang's empirical application to measure how much choices of representation move
+the estimate.
+
+The rest of the thesis is organised as follows. Section~2 places the thesis in
+the literature. Section~3 reviews the estimators of Abadie and Chang.
+Section~4 contains the theory: what happens to DML-DiD when sparsity fails, and
+how this depends on the representation of the covariates.
+Section~\ref{sec:mc} provides simulation evidence. Section~\ref{sec:emp} revisits
+Chang's application. Section~\ref{sec:conclusion} concludes.
+\end{ins}
+\note{If Section~6 ends up short or is cut, change (c) accordingly.}
+
+\subsection{Section 2 (pp.~3--5)}
+
+\where{p.~3: the linear model.}
+The model $Y_i=D_i\theta+X_i'\beta+\varepsilon_i$, $D_i=X_i'\gamma+v_i$ is the
+setting of post-double-selection, and of Kolesár et al. Say so, since the reader
+otherwise wonders why a section on DiD starts with a cross-section:
+``\dots consider the partially linear model that
+\textcite{belloni2014inference} and \textcite{kolesar2026fragility} study''.
+``Suppose that as a researcher you are interested in modeling the outcome
+$Y_i$'' should be ``interested in $\theta$''.
+
+\where{p.~3--4: ``Goodman-Bacon (2021) and Caetano and Callaway (2026) document
+naïve linear inclusion \dots\ as e.g.\ formulated by Angrist (n.d.)''.}
+A word is missing (``document \emph{that} naïve linear inclusion''), the book is
+\textcite{angrist2009mostly}, and ``diverges from non-staggered treatment timing
+with homogenous effects'' packs two different problems into one clause:
+Goodman-Bacon is about timing, Caetano and Callaway about covariates. Split the
+sentence in two.
+
+\where{p.~4: ``Chang (2020) shows that plugging machine learning estimates \dots\
+destroys $\sqrt N$-consistency. He restores it by deriving new score functions
+of the outcome- and propensity regression \dots''}
+\begin{ins}
+\textcite{chang2020double} shows that plugging machine learning estimates of the
+propensity score into the estimator of \textcite{abadie2005semiparametric}
+does not in general give a $\sqrt N$-consistent estimator. He restores
+$\sqrt N$-consistency by deriving Neyman-orthogonal scores, which add an outcome
+regression to Abadie's moment condition, and by combining them with
+cross-fitting.
+\end{ins}
+
+\where{p.~4: ``Ordinary Least Squares becomes infeasible, while sparsity-based
+estimators remain valid.''}
+Too strong: their validity is what the thesis questions. Write ``\dots OLS
+becomes infeasible or very imprecise, while sparsity-based estimators remain
+feasible''.
+
+\where{p.~5: ``Smucler et al.\ (2019) show that \dots\ the final estimator will be
+$\sqrt n$-consistent.''}
+``two-nuisance influence function'' is their ``bilinear influence function'',
+and the last sentence says the estimator is consistent ``as long as the other
+nuisance [is] estimated consistently'', which is not enough: the other one must
+be sparse enough to compensate.
+\begin{ins}
+\textcite{smucler2019unifying} show that for parameters with a bilinear
+influence function, which include the ATT, cross-fitted estimators with
+$\ell_1$-regularised first steps are $\sqrt n$-consistent and asymptotically
+normal whenever the product of the sparsity indices of the two nuisances is
+small enough, instead of each index on its own. The authors call this feature
+rate double robustness: one nuisance may be far from sparse, provided it is
+still estimated consistently and the other is sparse enough to compensate.
+\end{ins}
+
+\where{p.~5: Wüthrich and Zhu.} ``under half the chosen penalty'' is right. Add
+what makes it relevant here: ``\dots can lead to bias in post-double-selection.
+Proposition~\ref{prop:stein} gives the corresponding result for DML-DiD.''
+
+% =============================================================================
+\section{Inserts: categorical covariates and pooling (Section 4.2)}\label{sec:pool-ins}
+
+\where{p.~17, from ``Proposition 12 shows how far the estimator moves \dots'' to
+the end of Section~4 (p.~19). This replaces ``INDSÆT HER'', Proposition~13, its
+proof, Corollary~14 and the two remarks.}
+\note{I recomputed every number in the running example and in
+Table~\ref{tab:pooling} today from \texttt{Bribes\_Regression.dta} in the
+repository, with the sample definition of your notebook ($N=1084$). Recompute
+them once in your own notebook (one \texttt{groupby} each), so that you can
+answer questions about them. The product group variable is
+\texttt{hc\_group}; transportation is group 14, machinery 13, animal products 1
+and metals 12.}
+\begin{ins}
+\subsubsection*{Categorical covariates: what the Lasso pools}
+Proposition~\ref{prop:decomp} describes how the estimate moves between bases.
+With categorical covariates it is possible to say \emph{which} bases create
+bias. As a running example, take the product group of a shipment in the data of
+\textcite{sequeira2016corruption} that Chang uses. The shipments fall into 14
+product groups. The largest, transportation (vehicles), accounts for 68.5\% of
+the 1{,}084 shipments in Chang's sample, and it differs from the other groups in
+both selection and trends: 5.1\% of its shipments are treated, against 40.4\% in
+the other groups, and among untreated shipments the mean of
+$\log(1+\text{bribe})$ is flat for transportation (0.91 before 2008, 0.88
+after), while it falls from 7.95 to 1.01 in the other groups. The comparison
+rests on 60 and 24 untreated shipments before 2008 and is only descriptive. It
+shows, however, that the way product group enters the dictionary can matter.
+
+A post-Lasso fit on dummies gives each category with a selected dummy its own
+level, like a fixed effect, and gives all remaining categories one common level,
+like pooled OLS. I say that these categories are \emph{pooled}. Just as pooled
+OLS is biased when the ignored group effects are correlated with the regressor,
+pooling biases DML-DiD when, among the pooled categories, those more often
+treated also have different untreated trends. Table~\ref{tab:pooling}
+illustrates how the reference category decides which categories are pooled.
+
+\end{ins}
+\begin{table}[ht]
+\centering\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{l cc @{\hspace{1em}} ccc c @{\hspace{1em}} ccc c}
+\toprule
+ & & & \multicolumn{4}{c}{Reference: transportation} & \multicolumn{4}{c}{Reference: metals}\\
+Product group & Share & Treated
+ & $d_{\text{mach}}^{\ast}$ & $d_{\text{anim}}$ & $d_{\text{met}}$ & Pool
+ & $d_{\text{trans}}^{\ast}$ & $d_{\text{mach}}$ & $d_{\text{anim}}$ & Pool\\
+\midrule
+Transportation          & 0.685 & 0.051 & 0 & 0 & 0 & I  & 1 & 0 & 0 & II\\
+Machinery and electrical& 0.072 & 0.667 & 1 & 0 & 0 & II & 0 & 1 & 0 & I\\
+Animal products         & 0.051 & 0.018 & 0 & 1 & 0 & I  & 0 & 0 & 1 & I\\
+Metals                  & 0.042 & 0.422 & 0 & 0 & 1 & I  & 0 & 0 & 0 & I\\
+\bottomrule
+\end{tabular}
+\caption{The four largest of the 14 product groups in Chang's sample of
+$N=1084$ shipments: share of shipments and share treated, and two codings by
+dummies with different reference groups. The starred column is the one the Lasso
+is assumed to select. Two groups are pooled if their rows agree in every
+selected column; post-Lasso then gives them the same fitted propensity score and
+outcome trend. With transportation as the reference, it is pooled with every
+group whose dummy is not selected. With metals as the reference, transportation
+has its own dummy and, once that dummy is selected, its own level. Source: own
+calculations based on the replication data of \textcite{chang2020double}; the
+names of the groups are inferred from the HS codes in each group.}
+\label{tab:pooling}
+\end{table}
+\begin{ins}
+
+To formalise this, let $Z\in\{1,\dots,C\}$ be a categorical covariate with
+shares $\pi_c=\Pr(Z=c)>0$, and suppose, to isolate its role, that $g_0$ and
+$\ell_{10}$ depend on $X$ only through $Z$. Any coding of $Z$ by 0/1 columns
+together with an intercept spans all functions of $Z$ if it has full rank. A
+post-Lasso fit on the selected columns is constant on the groups of categories
+that the selected columns do not distinguish: two categories are pooled if their
+rows agree in every selected column. Let $\mathcal G_g$ and $\mathcal G_\ell$ be
+the resulting partitions of the categories for the two fits, and suppose, as
+holds for reference and threshold coding, that the selected columns and the
+intercept span all functions that are constant on these pools. In the
+population, the refitted propensity score in pool $G$ is then the share of
+treated in the pool, $\hat g_G=\E[g_0\mid Z\in G]$.
+
+\begin{proposition}[Pooling bias] % \label{prop:pool}
+Under these conditions,
+\[
+  B_1(\hat g,\hat\ell)=\sum_{G\in\mathcal G_g}\frac{\Pr(Z\in G)}{p_0(1-\hat g_G)}\,
+  \operatorname{Cov}\big(g_0,\,\ell_{10}-\hat\ell\;\big|\;Z\in G\big).
+\]
+If both fits pool the same categories, $\hat\ell$ is constant on each pool and
+the covariance is $\operatorname{Cov}(g_0,\ell_{10}\mid Z\in G)$.
+\end{proposition}
+\begin{proof}
+On a pool $G$, $\hat g=\hat g_G$ is constant and
+$\E[\hat g_G-g_0\mid Z\in G]=0$. Hence
+$\E[(\hat\ell-\ell_{10})(\hat g_G-g_0)\mid Z\in G]
+=\operatorname{Cov}(\ell_{10}-\hat\ell,\,g_0\mid Z\in G)$, and $1-\hat g$ is
+constant on $G$. Summing over the pools with weights $\Pr(Z\in G)$ in
+Lemma~\ref{lem:bias} gives the result. If $\hat\ell$ is constant on $G$, it
+drops out of the covariance.
+\end{proof}
+Proposition~\ref{prop:pool} is the Remark of Section~\ref{sec:nonsparse} applied
+pool by pool. When both fits pool the same categories, each pool contributes the
+bias of an unadjusted DiD within the pool,
+$\operatorname{Cov}(g_0,\ell_{10}\mid Z\in G)/\{\hat g_G(1-\hat g_G)\}$, weighted
+by the pool's share of the treated,
+$\Pr(Z\in G\mid D=1)=\Pr(Z\in G)\,\hat g_G/p_0$. Pooling is harmless where
+selection or the remaining trend is constant within the pool, and harmful where
+both vary together. With a single pool, the proposition reduces to the Remark.
+
+\begin{corollary}[Reference category] % \label{cor:reference}
+Use reference coding with reference category $b$, and suppose that in both fits
+the pool containing $b$ is $\{b\}\cup U$, where the categories in $U$ share a
+common level: $g_c=g_U$ and $\ell_{10,c}=\ell_U$ for $c\in U$. Then, with
+$w=\pi_b/(\pi_b+\pi_U)$, the pool $\{b\}\cup U$ contributes
+\[
+  \frac{\pi_b(1-w)}{p_0(1-\hat g_{\{b\}\cup U})}\,(g_b-g_U)(\ell_{10,b}-\ell_U)
+\]
+to $B_1$. The contribution is zero if the reference category is typical in
+selection ($g_b=g_U$) or in trends ($\ell_{10,b}=\ell_U$). It is non-zero only if
+the reference category is atypical in both, its sign is the sign of
+$(g_b-g_U)(\ell_{10,b}-\ell_U)$, and it grows with the share $\pi_b$ of the
+reference category.
+\end{corollary}
+\begin{proof}
+Within the pool, $g_0$ and $\ell_{10}$ take two values, with probability $w$ on
+$b$, so
+$\operatorname{Cov}(g_0,\ell_{10}\mid Z\in\{b\}\cup U)=w(1-w)(g_b-g_U)(\ell_{10,b}-\ell_U)$.
+Multiply by $\Pr(Z\in\{b\}\cup U)=\pi_b/w$.
+\end{proof}
+The pool $\{b\}\cup U$ arises when neither fit selects the dummies of $U$, and
+this is the regime the Lasso is pushed into. With an atypical reference
+category, every typical category needs the same non-zero coefficient. It is
+cheaper for the Lasso to fit the common level through the unpenalised intercept
+and leave these coefficients at zero, which pools the reference category with
+the typical ones. Two remarks follow.
+\begin{itemize}
+\item \emph{Size.} In the regime of \textcite{kolesar2026fragility}, with many
+  categories of equal size, $\pi_b$ is of order $1/p$, so a wrong reference
+  category costs only $O(1/p)$ in approximation error and satisfies their
+  approximate sparsity condition \eqref{eq:sparsity1}. In DML-DiD, the bias is of
+  order $\pi_b$, and it is negligible relative to the standard error only if
+  $\pi_b\sqrt N\to0$. A wrong reference category therefore matters as soon as its
+  share is not small relative to $N^{-1/2}$. This is the typical case in applied
+  work, where a common default is to use the largest category as the reference.
+\item \emph{Ordered categories.} Suppose $Z$ is ordered, for example in bins, and
+  both selection and trends jump at the same bin. With dummy coding, the Lasso
+  must select a separate dummy for every bin on one side of the jump, and each
+  dummy rests only on the observations in its own bin. With threshold coding,
+  $\mathbf 1\{Z\ge c\}$, a single column describes the jump, and it rests on all
+  observations. When the bins are too small for their dummies to be selected,
+  dummy coding pools bins on both sides of the jump, and by
+  Proposition~\ref{prop:pool} the bias approaches that of the unadjusted DiD.
+  Threshold coding avoids this.
+\end{itemize}
+\end{ins}
+
+% =============================================================================
+\section{Inserts: Section 5, simulations}\label{sec:sims}
+
+All numbers in this section are computed from the CSV files on the branch
+(\texttt{d1\_*.csv}, \texttt{d23\_*.csv}, \texttt{d4\_*.csv} and
+\texttt{d4\_*\_forced.csv}). The tables are in \texttt{tables/}; the scripts
+\texttt{tables/build\_d23.py} and \texttt{tables/build\_d4.py} rebuild them. They
+need \verb|\usepackage{booktabs}|.
+
+\subsection{Practicalities and estimators (pp.~19--20)}
+
+\paragraph{What to fix.}
+\begin{itemize}
+\item $n$ is the fold size $N/K$ everywhere else, but here it is the number of
+  observations in the Lasso. Use $M$, as in Section~3.3.
+\item ``The error $\hat e=y-\bar y$ is calculated in a pilot step and the pilot
+  residuals in one update'' is hard to parse.
+\item ``I follow the code of Chang (2020) and clip'': Chang's code does not
+  clip. It drops the observations with $\hat g$ outside $(0.03,0.97)$. Your runs
+  clip, so only the wording changes.
+\item The list of estimators does not match the tables. Table~1 has two
+  versions of DML-DiD and Abadie's estimator, which the list lacks; OR-DiD
+  appears only in D4; and $K=5$ is not true for the first panel of Table~1.
+\item ``Each design cell is replicated $R=500$ times'': D4 has $R=200$.
+  ``replication $r$ uses the $r$-th child of that seed'': no seed has been
+  introduced.
+\item ``the product term of Lemma ??'' (twice, also in the caption of Table~1):
+  Lemma~4.
+\end{itemize}
+\where{Replace ``Practicalities'' and ``Estimators'' (p.~19 to the top of p.~20).}
+\begin{ins}
+\paragraph{First steps.} Covariates are standardised on each training sample,
+the intercept is never penalised, and all penalties are plug-in with $c=1.1$ and
+$\alpha=0.05$. Let $M$ be the number of observations in the regression at hand:
+the controls of the auxiliary sample for the outcome nuisance, and the whole
+auxiliary sample for the propensity score. The outcome nuisance solves
+\[
+  \min_\beta\ \frac1M\sum_i(y_i-q_i'\beta)^2+\lambda\sum_j\hat\psi_j|\beta_j|,
+  \qquad
+  \lambda=\frac{2c}{\sqrt M}\,\Phi^{-1}\Big(1-\frac{\alpha}{2p}\Big),\quad
+  \hat\psi_j=\Big(\frac1M\sum_iq_{ij}^2\hat e_i^2\Big)^{1/2}.
+\]
+The residuals $\hat e_i$ are first $y_i-\bar y$ and then, in one refinement
+step, the residuals of the resulting Lasso fit. This is the rule of
+\textcite{belloni2012sparse} that Chang suggests, with $\alpha=0.05$ in place of
+a level that tends to zero. The propensity score solves
+\[
+  \min_\beta\ \frac1M\sum_i\big[\log(1+e^{q_i'\beta})-D_iq_i'\beta\big]+\lambda_g\lVert\beta\rVert_1,
+  \qquad \lambda_g=\frac{c}{2\sqrt M}\,\Phi^{-1}\Big(1-\frac{\alpha}{2p}\Big),
+\]
+a plug-in penalty of the form proposed by \textcite{belloni2016post}. I clip the
+fitted propensity scores to $[0.03,0.97]$. This is the window Chang's
+replication code uses; his code drops the observations outside it instead.
+
+\paragraph{Estimators.}
+\begin{enumerate}
+\item \emph{DML-DiD, post-Lasso}: the cross-fitted estimator of Definition~2 with
+  $K=5$ folds, where each nuisance is refitted without penalty on its selected
+  covariates. This is the main specification.
+\item \emph{DML-DiD, Lasso (no refit)}: the same, with the penalised fits plugged
+  into the score directly, as in Chang's specification.
+\item \emph{Oracle}: the score evaluated at the true $(g_0,\ell_{10})$. Its error
+  is sampling error alone.
+\item \emph{Unadjusted DiD}: the difference in mean outcome changes between
+  treated and controls.
+\item \emph{Abadie, plug-in Lasso} (D1 only): the estimator (3) with $\hat g$ from
+  a logit Lasso fitted on the full sample, without refit and without
+  cross-fitting.
+\item \emph{OR-DiD} (D4 only): OLS of $Y(1)-Y(0)$ on the full dictionary among the
+  controls, imputed for the treated. It requires fewer regressors than controls.
+\end{enumerate}
+
+\paragraph{Replications and reporting.} D1 and D2/D3 use $R=500$ replications per
+design cell and D4 uses $R=200$. All random numbers derive from one seed: in
+each cell, replication $r$ uses the $r$-th child of a seed sequence built from
+that seed and the parameters of the cell, so cells with the same data-generating
+process share their data. For each estimator I report the bias, the standard
+deviation of $\tilde\theta$ across replications (SD), the coverage of the nominal
+95\% interval $\tilde\theta\pm1.96\,\widehat{\mathrm{SE}}$, and the ratio of the
+average standard error to the SD (SE/SD). Monte Carlo standard errors (MCSE)
+measure the simulation uncertainty of a reported number, which shrinks with $R$;
+the SD measures the sampling variability of the estimator itself. For a coverage
+rate $c$ the MCSE is $\sqrt{c(1-c)/R}$, about 0.010 at nominal coverage for
+$R=500$ and 0.015 for $R=200$. For DML-DiD I also report $B_1$, the product term
+of Lemma~\ref{lem:bias}, evaluated with the fold-specific fits on an independent
+test draw of 5{,}000 observations and averaged over folds.
+
+Each design tests specific results of Section~4. D1 tests Lemma~\ref{lem:bias}
+and the Remark of Section~\ref{sec:nonsparse} in a sparse design. D2 and D3 test
+Propositions~\ref{prop:ratefail}--\ref{prop:stein} when the coefficients are
+dense. D4 tests Lemma~\ref{lem:invariance}, Proposition~\ref{prop:pool} and
+Corollary~\ref{cor:reference} when the truth is sparse in one coding but not in
+another.
+\end{ins}
+
+\subsection{D1 (pp.~20--22)}
+
+\paragraph{What to fix.}
+\begin{itemize}
+\item \textbf{Table~1 is from the run before your rerun.} The file
+  \texttt{d1\_table.tex} in the repository is built from the current CSV files
+  and differs in the third decimal in ten entries (for example Abadie
+  $1.428\to1.429$, $1.089\to1.090$, $0.944\to0.945$; robust SD of post-Lasso at
+  $N=200$ $0.530\to0.524$; coverage of Lasso in the first panel $0.946\to0.948$).
+  Nothing changes in substance, but paste the current file so that the thesis
+  matches the files you hand in.
+\item ``before any notion of sparsity is introduced'': the design is exactly
+  sparse. Write ``in a design where sparsity holds''.
+\item ``when parallel trends do not hold unconditionally for the untreated
+  units'' should be ``when parallel trends hold only conditionally on the
+  covariates''.
+\item ``$\ell_{10}=1+X'\gamma$ with $\gamma=\delta$'' should be
+  $\ell_{10}=1+X'\delta$ with $\delta=\gamma$.
+\item ``the same five covariates with the same weights will drive the trend for
+  the treated and the untreated'' is not what the design does. The same five
+  covariates drive \emph{selection into treatment} and \emph{the untreated
+  trend}.
+\item ``I a signal-to-noise-ratio such that it explains half the variation in
+  the untreated outcome'': a verb is missing, and it is the \emph{change} in the
+  outcome.
+\item ``as per~.'': the Remark.
+\item Results: ``it shows that the plug-in Abadie estimator is skewed'' should be
+  ``biased''. ``between $1.563-1.569$'': the table has 1.559--1.566. ``removes
+  most of the bias: at $N=200$'': at $N=200$ a third of it remains. ``the
+  refitting removes some of the confounding'' says too little: without the refit
+  coverage is zero in every trend cell.
+\item Digest: ``requieres $N$ to be around 1000 for close to full coverage''
+  \textbf{(wrong as printed)}: coverage is 0.884 at $N=1000$ and reaches the
+  nominal level only at $N=2000$. ``refitting the penalty'': the penalty is not
+  refitted; the coefficients are refitted after selection.
+\item The digest says ``D1 shows that the bias of DML-DiD is the product term of
+  lemma 4'', but the results text never compares the bias with $B_1$.
+\end{itemize}
+
+\where{Replace ``Design setup'' from ``I deviate from his setup \dots'' to ``\dots
+while maintaining letting $p=N/2$.'' (p.~20), and add the first paragraph after
+the display for $Y(1)-Y(0)$.}
+\begin{ins}
+The level coefficients $\beta$ cancel in the difference. Whether the outcome
+\emph{levels} are sparse is therefore irrelevant for DML-DiD; in the code,
+$\beta_j=\gamma_j+0.5$, so every covariate shifts the level. Only the untreated
+trend $\ell_{10}$ and the propensity score matter. Following
+\textcite{chang2020double}, the first version of the design has
+$\ell_{10}\equiv1$, $N=200$, $p=100$, $K=2$, and errors with standard deviation
+0.1.
+
+I depart from his design in three ways. First, I use $K=5$ folds. Second, I add
+a version with a trend, $\ell_{10}(X)=1+X'\delta$ with $\delta=\gamma$: the five
+covariates that drive selection into treatment also drive the untreated trend,
+so parallel trends hold conditionally on $X$ but not unconditionally. In this
+version the standard deviation of $\varepsilon_2$ is $\|\delta\|=\sqrt{2.2}$, so
+that in the population the covariates explain half of the variance of the
+untreated change in outcomes. Third, I let $N\in\{200,1000,2000\}$ with
+$p=N/2$. With this $\gamma$, the propensity index has standard deviation 1.48, so
+overlap is thin in the tails: some controls receive weights $\hat g/(1-\hat g)$
+above 30, which inflates the variance of the estimators that use the propensity
+score.
+\end{ins}
+\note{``above 30'' is the clipping bound, $0.97/0.03=32$. Keep the sentence only
+if the clipping binds in your D1 runs (check \texttt{np.mean(g == 0.97)} once).}
+
+\where{Replace ``Priors'' (pp.~20--21).}
+\begin{ins}
+\paragraph{Priors.} In Chang's design the untreated trend is constant, so
+$\operatorname{Cov}(g_0,\ell_{10})=0$ and, by the Remark of
+Section~\ref{sec:nonsparse}, the unadjusted DiD is unbiased: there is no
+confounding to remove. DML-DiD should be unbiased as well. Abadie's estimator is
+the score $\psi_1$ with $\ell\equiv0$, so by Lemma~\ref{lem:bias} its bias for a
+given propensity fit is
+$B_1(\hat g,0)=\E\big[\ell_{10}\,(g_0-\hat g)/\{p_0(1-\hat g)\}\big]$. In Chang's
+design, this is the common trend, $\ell_{10}\equiv1$, times the average error in
+the weights of the controls, which is not zero when $\hat g$ is shrunk. I
+therefore expect Abadie's estimator to be biased, by an amount proportional to
+the common trend, although nothing confounds the comparison.
+
+With the trend, the unadjusted DiD is biased by
+\[
+  \frac{\operatorname{Cov}(g_0,\ell_{10})}{p_0(1-p_0)}
+  =\frac{\E[\Lambda'(X'\gamma)]\,\gamma'\delta}{p_0(1-p_0)}=1.563,
+\]
+since $p_0=0.5$, $\gamma'\delta=2.2$ and $\E[\Lambda'(X'\gamma)]=0.178$. DML-DiD
+is consistent, but at small $N$ the smallest coefficients lie below the plug-in
+penalty and the Lasso sets them to zero. Lemma~\ref{lem:bias} then predicts a
+finite-sample bias equal to $B_1$, which falls as $N$ grows, and
+Proposition~\ref{prop:stein} predicts that without the refit the shrinkage of the
+selected coefficients adds to it.
+\end{ins}
+
+\where{Replace the two paragraphs of results after Table~1 (pp.~21--22).}
+\begin{ins}
+Table~\ref{tab:d1} confirms each prediction. In Chang's design, DML-DiD is
+unbiased (bias below 0.001 in absolute value, MCSE 0.001) and covers at 0.960
+($K=2$) and 0.956 ($K=5$). Abadie's plug-in estimator is biased upwards by 0.071
+(MCSE 0.002), about 1.7 of its own standard deviations. This reproduces the
+contrast Chang uses to motivate DML-DiD. The unadjusted DiD, however, is also
+unbiased, covers at 0.948, and is the most precise of the estimators (SD 0.017
+against 0.024 for DML-DiD).\footnote{The oracle is less precise than DML-DiD
+here (SD 0.027 against 0.024). It uses the true propensity scores, which are
+more extreme than the fitted ones and give some controls large weights. That an
+estimated propensity score can give a more precise estimator than the true one
+is known from \textcite{hirano2003efficient}.} In this design, adjusting for
+covariates buys nothing.
+
+Once the covariates enter the trend, the unadjusted DiD is biased by
+1.559--1.566 across $N$, matching the predicted 1.563, and never covers.
+DML-DiD with post-Lasso first steps removes this bias only gradually. At
+$N=200$ the outcome Lasso selects on average 0.21 of the five trend
+coefficients, so $\hat\ell_{1k}$ is close to a constant, and the adjustment comes
+almost entirely from the propensity score, where the Lasso selects 1.3
+covariates. The bias is 0.565 (MCSE 0.028), a third of the unadjusted bias,
+coverage is 0.604, and the distribution of $\tilde\theta$ has heavy tails (SD
+0.64 against a robust SD of 0.52; SE/SD 0.84). At $N=1000$ and $2000$, on
+average 3.07 and 3.95 of the trend coefficients are selected, the bias falls to
+0.096 and 0.033, and coverage rises to 0.884 and 0.946 (MCSE 0.014 and 0.010).
+Without the refit, as in Chang's specification, the selected coefficients are
+shrunk towards zero, and DML-DiD removes much less of the confounding: the bias
+is 1.431, 0.776 and 0.490, and coverage is at most 0.004. In every cell, $B_1$
+tracks the bias (with the refit 0.617, 0.094 and 0.036 against 0.565, 0.096 and
+0.033; without it 1.429, 0.781 and 0.486 against 1.431, 0.776 and 0.490), as
+Lemma~\ref{lem:bias} and Lemma~\ref{lem:decomp} require. The oracle covers at
+0.946--0.964 throughout, so the shortfall comes from the first steps, not from
+the variance estimator. Abadie's plug-in estimator remains biased by 0.95--1.43.
+\end{ins}
+
+\where{Replace ``Digest'' (p.~22).}
+\begin{ins}
+\paragraph{What D1 shows.} First, the bias of DML-DiD is the product term $B_1$
+of Lemma~\ref{lem:bias}, in every cell and for both versions of the first steps.
+Second, Chang's simulation design contains no confounding: the unadjusted DiD is
+unbiased there and more precise than DML-DiD. His simulation shows that a
+plug-in first step harms Abadie's estimator and that the orthogonal score
+repairs this. It does not show that DML-DiD removes confounding. Third, once the
+covariates do confound the trend, DML-DiD needs a large sample even in an
+exactly sparse design with five relevant covariates: coverage is 0.60 at
+$N=200$ and 0.88 at $N=1000$, and reaches the nominal level at $N=2000$. Fourth,
+the refit matters. Without it, the shrinkage of the selected coefficients leaves
+half of the confounding at $N=1000$ and a third at $N=2000$, and coverage is
+zero.
+\end{ins}
+
+\subsection{D2 and D3 (pp.~22--23)}
+
+\paragraph{What to fix in the text that is there.}
+\begin{itemize}
+\item D3 is never defined. In your code D2 is the design with aligned signs and
+  D3 the one with random signs.
+\item ``$X\sim N(0,1)$'' should be $X\sim N(0,I_p)$; ``$g_0=\Lambda(X'\delta)$''
+  should be $\Lambda(X'\gamma)$ \textbf{(wrong as printed)}; ``let both the outcome
+  and the propensity nuisance follow a trend'' is not what is meant.
+\item ``$R=200$'': the CSV files have $R=500$.
+\item ``the estimates with refitted penalties'': see D1.
+\item Priors: for $(2,2)$, ``coverage is expected to approach 1'' should be
+  ``approach the nominal level''. The priors contain no numbers, although the
+  theory gives them.
+\item ``Results'' and ``Digest'' are empty.
+\end{itemize}
+
+\where{Replace the whole of ``Second and third design'' (pp.~22--23).}
+\begin{ins}
+\subsection*{Second and third design: decaying coefficients}
+
+D2 and D3 address the case in which the nuisance functions are not sparse in
+the dictionary the researcher uses: every covariate matters a little, as in the
+dense models of \textcite{giannone2021economic}. The coefficients decay
+polynomially, and the rate of decay moves the design from dense to
+approximately sparse. Designs with polynomially decaying coefficients are
+standard in this literature
+\parencite{belloni2014inference,belloni2017program,athey2018approximate}; the
+combination of different decay rates for the two nuisances follows
+\textcite[Appendix~D]{smucler2019unifying}.
+
+\paragraph{Design.}
+$X_i\sim N(0,I_p)$ with $p=N/2$, $g_0(X)=\Lambda(X'\gamma)$ and
+$\ell_{10}(X)=1+X'\delta$, where $|\gamma_j|\propto j^{-\alpha_g}$,
+$|\delta_j|\propto j^{-\alpha_\ell}$ and $\|\gamma\|_2=\|\delta\|_2=1$, so that the
+strength of selection and of the trend is the same in every cell and only the
+decay differs. The outcome is
+$Y_i(1)-Y_i(0)=\ell_{10}(X_i)+D_i\theta_0+\varepsilon_i$ with $\theta_0=1$ and
+$\varepsilon_i\sim N(0,1)$. In D2 the signs are aligned, $\gamma_j,\delta_j>0$.
+In D3 the signs are independent random draws, fixed once per cell and nested
+across $N$, so that the leading coefficients are the same for every $N$. The
+decay rates are
+$(\alpha_g,\alpha_\ell)\in\{(0.7,0.7),(2,2),(0.8,1.5)\}$,
+$N\in\{500,1000,2000,4000\}$, and $K=5$.
+
+\paragraph{Priors.} With coefficients that decay like $j^{-\alpha}$, the Lasso
+error is of order $N^{-(1-e)/2}$ with $e=1/(2\alpha)$, up to logarithms
+\parencite[Example~10]{smucler2019unifying}. Chang's condition, an error below
+$N^{-1/4}$ for each first step, holds if $\alpha>1$ for both. The product
+condition of Proposition~\ref{prop:sparse} holds if
+$1/\alpha_g+1/\alpha_\ell<2$. The three cells are chosen accordingly:
+$(0.7,0.7)$ violates both conditions, $(2,2)$ satisfies both, and $(0.8,1.5)$
+satisfies the product condition but not Chang's. Four predictions follow.
+\begin{enumerate}
+\item By Lemma~\ref{lem:bias}, the bias equals $B_1$ in every cell, and by
+  Proposition~\ref{prop:stein}, $B_1$ is given by the errors of the two
+  coefficient vectors.
+\item The bias relative to the standard error, $\sqrt N\,|\text{bias}|$, behaves
+  like $N^{(e_g+e_\ell-1)/2}$. It grows in $(0.7,0.7)$, with exponent $0.21$,
+  so coverage goes to zero (Proposition~\ref{prop:ratefail}); it falls in
+  $(2,2)$, with exponent $-0.25$, so coverage approaches the nominal level
+  (Proposition~\ref{prop:ratedr}); and in $(0.8,1.5)$ the exponent is $-0.02$:
+  the product condition holds, but so narrowly that the bias should stay
+  roughly constant relative to the standard error at any realistic $N$.
+\item By \eqref{eq:both}, the bias is the sum of $\gamma_j\delta_j$ over the
+  covariates that both fits omit. With aligned signs every term is positive;
+  with random signs the terms partly cancel. The bias should therefore be
+  smaller in D3 than in D2 wherever many covariates are omitted.
+\item Without the refit, the shrinkage of the selected coefficients adds to the
+  bias in every cell.
+\end{enumerate}
+As a benchmark, the bias of the unadjusted DiD is $0.826\,\gamma'\delta$ in all
+cells, by the Remark of Section~\ref{sec:nonsparse} with $p_0=0.5$ and
+$\E[\Lambda'(X'\gamma)]=0.207$.
+
+\end{ins}
+\begin{table}[ht]
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\input{../tables/d23_table_full.tex}
+\caption{D2 (aligned signs) and D3 (random signs): bias and coverage of the
+nominal 95\% interval of DML-DiD, $R=500$, $\theta_0=1$. $\gamma'\delta$ and the
+bias of the unadjusted DiD are given for $N=4000$. ``Slope'' is the slope of
+$\log(\sqrt N|\text{bias}|)$ on $\log N$ and its predicted value
+$(e_g+e_\ell-1)/2$. The largest MCSE of a bias in the table is 0.006.}
+\label{tab:d23}
+\end{table}
+\begin{ins}
+
+\end{ins}
+\begin{table}[ht]
+\centering\footnotesize
+\setlength{\tabcolsep}{4pt}
+\input{../tables/d23_formula_table.tex}
+\caption{D2 and D3: bias of DML-DiD, $B_1$ on the test draw, and the
+approximations of Section~\ref{sec:nonsparse}. ``Formula'' is
+Proposition~\ref{prop:stein} evaluated at the fitted coefficients, ``Inner'' is
+\eqref{eq:inner} and ``Both omit'' is \eqref{eq:both}.}
+\label{tab:d23formula}
+\end{table}
+\begin{ins}
+
+\paragraph{Results.} Tables~\ref{tab:d23} and~\ref{tab:d23formula} show the
+following.
+\begin{enumerate}
+\item \emph{The bias is $B_1$.} In every cell the bias of DML-DiD and $B_1$ agree
+  to within 0.02 at $N=500$ and 0.004 at $N=4000$, and
+  Proposition~\ref{prop:stein} reproduces $B_1$ to within 0.01 for post-Lasso.
+  The standard errors themselves are accurate: SE/SD is between 0.92 and 1.05
+  in all cells. The failures of coverage below are failures of centring, not of
+  the variance estimator.
+\item \emph{Dense in both nuisances.} In $(0.7,0.7)$ with aligned signs,
+  post-Lasso leaves 62\% of the bias of the unadjusted DiD at $N=500$ and 39\% at
+  $N=4000$, where the Lasso selects on average 5 of the 2{,}000 covariates for
+  the propensity score and 6 for the trend. $\sqrt N\,|\text{bias}|$ grows from
+  11 to 20 (slope 0.27, against a predicted 0.21), and coverage is 0.04 at
+  $N=500$ and zero thereafter, as Proposition~\ref{prop:ratefail} predicts.
+\item \emph{Sparse in both.} In $(2,2)$, the bias of post-Lasso falls from 0.065
+  to 0.016, the slope of $\sqrt N\,|\text{bias}|$ is $-0.25$, as predicted, and
+  coverage is between 0.90 and 0.95.
+\item \emph{Inside the product region, outside Chang's condition.} In
+  $(0.8,1.5)$ with aligned signs, $\sqrt N\,|\text{bias}|$ barely moves, from 4.0
+  at $N=500$ to 3.6 at $N=4000$ (slope $-0.05$, against a predicted $-0.02$), and
+  coverage stays at 0.61--0.66. Proposition~\ref{prop:ratedr} applies to this
+  cell, but its conclusion is not visible at these sample sizes: an exponent of
+  $-0.02$ would require $N$ to grow by many orders of magnitude before the bias
+  becomes small relative to the standard error.
+\item \emph{Alignment.} With random signs, the contributions of the omitted
+  covariates partly cancel. In $(0.8,1.5)$ the bias of post-Lasso is 0.022 at
+  $N=1000$ and vanishes from $N=2000$, with coverage 0.93--0.95, against 0.66
+  with aligned signs. In $(0.7,0.7)$ the share of the unadjusted bias that
+  remains at $N=4000$ falls from 39\% to 13\%, but coverage is still only
+  0.72--0.80. In $(2,2)$, where few covariates are omitted, alignment makes
+  little difference. For random signs I do not report slopes: the bias falls
+  below its Monte Carlo error or changes sign as more covariates are selected,
+  so $\log|\text{bias}|$ does not measure a rate.
+\item \emph{The refit.} Without the refit, the bias is 1.4 to 7 times larger in
+  the cells with aligned signs, and coverage is at most 0.41, even in $(2,2)$.
+  For post-Lasso, the sum over the covariates that both fits omit,
+  \eqref{eq:both}, tracks $B_1$ and over-predicts it by 3--24\%. Without the
+  refit it misses the shrinkage of the selected coefficients (0.069 against a
+  $B_1$ of 0.280 in $(2,2)$ at $N=500$), and only the inner product
+  \eqref{eq:inner} tracks $B_1$.
+\end{enumerate}
+
+\paragraph{What D2 and D3 show.} When both nuisances are dense in the
+researcher's dictionary, DML-DiD with Lasso first steps removes only part of the
+confounding and its confidence interval does not cover, although the standard
+errors are accurate. The product condition describes the limit correctly, but
+close to its boundary the limit is irrelevant in practice: a design that
+satisfies the condition has a coverage of two thirds at every sample size
+considered. Whether the remaining bias is large depends on whether the omitted
+covariates push selection and trends in the same direction, which the
+researcher cannot check from the selected model. The refit matters in every
+cell.
+\end{ins}
+\note{$\E[\Lambda'(X'\gamma)]=0.207$ is implied by your notebook output
+(unadjusted bias $0.826$ at $\gamma'\delta=1$, $p_0=0.5$); print
+\texttt{e\_dlam} once to confirm the third decimal. If your supervisor wants
+D2/D3 shorter, move Table~\ref{tab:d23formula} and result~6 to the appendix; the
+main text then needs only Table~\ref{tab:d23} with the aligned rows
+(\texttt{tables/d23\_table\_main.tex}) and results 1--5.}
+
+\subsection{D4 (pp.~23--24)}
+
+\paragraph{What to fix in the text that is there.}
+\begin{itemize}
+\item ``investigates the how DML-DiD grapples in the setting of Kolesár et al.''
+  needs rewriting; ``categoricals and dummies are included in the structural
+  model, where only one of the representations of the covariate matrix is truly
+  sparse'' is not accurate: several codings are sparse, and one is not.
+\item The setup stops in the middle of a sentence (``Category''), numbers the
+  categories 1--3 where your code and my tables use 0--2, and does not give
+  $C$, the shares, the codings, D4b, $N$, $R$ or the estimators.
+\item ``By corollary ??'' is Corollary~14; ``By Lemma ??'' is Lemma~10. There is
+  a stray ``I'' on p.~24.
+\item The ``Digest'' is my list of priors from the chat, pasted as running text
+  (``P10, \dots\ predicted at 0.045, 0.119 and 0.195 for $=0.05$ \dots\ equals B
+  and the bias''). It is not a digest and several symbols were lost.
+\end{itemize}
+
+\where{Replace the whole of ``Fourth design'' (pp.~23--24).}
+\begin{ins}
+\subsection*{Fourth design: the same truth in different codings}
+
+D4 addresses the case in which the nuisance functions are sparse in one coding
+of the covariates but not in another. It transfers the categorical examples of
+\textcite[Section~3.3]{kolesar2026fragility} to DML-DiD. The truth is fixed and
+only its coding changes: each replication draws one data set and one fold
+split, and every coding is estimated on the same data with the same folds, so
+differences between codings are pure effects of the representation.
+
+\paragraph{Design.}
+A categorical covariate $Z$ with $C$ categories enters both nuisances,
+$g_0=\Lambda(-0.25+\gamma_Z)$ and $\ell_{10}=1+\delta_Z$, and
+$Y_i(1)-Y_i(0)=\ell_{10}+\theta_0D_i+\varepsilon_i$ with $\theta_0=1$ and
+$\varepsilon_i\sim N(0,1)$. Every dictionary also contains $N/10$ irrelevant
+$N(0,1)$ covariates, $N\in\{1000,2000,4000\}$, $R=200$ and $K=5$.
+\begin{itemize}
+\item \emph{D4a (reference category).} $C=20$. Category 0 is atypical in both
+  selection and trends, $(\gamma_0,\delta_0)=(1,1)$; category 1 only in
+  selection, $(1,0)$; category 2 only in trends, $(0,1)$; categories 3--19 are
+  typical, $(0,0)$. Category 0 has share $\pi_0\in\{0.05,0.15,0.30\}$ and the
+  other categories share the rest equally. The codings are dummies with
+  reference category 3, 1, 2 or 0.
+\item \emph{D4b (ordered categories).} $C=40$ ordered categories with equal
+  shares, like age bins. Selection and trends jump in the middle,
+  $\gamma_c=\mathbf 1\{c\ge20\}$ and $\delta_c=0.75\cdot\mathbf 1\{c\ge20\}$. The
+  codings are thresholds, $\mathbf 1\{Z\ge c\}$ for $c=1,\dots,39$, and dummies
+  with the lowest category as reference.
+\end{itemize}
+Besides DML-DiD with and without the refit, I report two estimators that do not
+penalise the dummies: OR-DiD on the full dictionary, and DML-DiD with the
+dummies \emph{forced in}, where the Lasso penalises only the irrelevant
+covariates.
+
+\paragraph{Priors.}
+\begin{enumerate}
+\item \emph{Reference category.} By Corollary~\ref{cor:reference}, only
+  reference category 0, which is atypical in both nuisances, creates bias. If
+  the Lasso gives categories 1 and 2 their own levels and pools category 0 with
+  the typical ones, the corollary predicts a bias of 0.045, 0.119 and 0.195 for
+  $\pi_0=0.05$, 0.15 and 0.30. This exceeds the bias of the unadjusted DiD
+  (0.039, 0.108 and 0.180), because categories 1 and 2 contribute to the
+  unadjusted bias with the opposite sign. References 1, 2 and 3 are atypical in
+  at most one nuisance and should be harmless.
+\item \emph{Pooling.} By Proposition~\ref{prop:pool}, the bias equals the pooling
+  formula evaluated at the selected columns, in every cell.
+\item \emph{Ordered categories.} Threshold coding needs one selected column and
+  should be unbiased. Dummy coding needs 20 dummies, each resting on 2.5\% of the
+  sample. As long as the Lasso cannot select them, it pools across the jump, and
+  the bias approaches that of the unadjusted DiD, 0.184.
+\item \emph{Unpenalised dummies.} By Lemma~\ref{lem:invariance}, OR-DiD gives the
+  same estimate under every coding and is unbiased, at the price of a larger
+  variance, since it estimates all $N/10+C-1$ coefficients. Forcing the dummies
+  in makes DML-DiD invariant to the reference category as well. I expect it to
+  be unbiased, with a variance between that of DML-DiD with a harmless coding
+  and that of OR-DiD.
+\item \emph{The range grows with $N$.} Where a coding is biased, the bias stays
+  while the standard error shrinks, so the studentised range across codings,
+  $\mathcal R(\mathcal A)$, should grow with $N$.
+\item \emph{The refit.} Without the refit, the shrinkage of the selected
+  coefficients adds bias, also for the harmless codings.
+\end{enumerate}
+
+\end{ins}
+\begin{table}[ht]
+\centering\footnotesize
+\setlength{\tabcolsep}{2.8pt}
+\input{../tables/d4a_table.tex}
+\caption{D4a at $N=4000$, $R=200$, $\theta_0=1$. The label of each coding says in
+which nuisance its reference category is atypical. ``Pool'' is the formula of
+Proposition~\ref{prop:pool} evaluated at the selected columns; ``No refit'' is
+the same Lasso fit plugged in without refitting; ``Selected'' is the average
+number of dummies the Lasso selects for the propensity score and the trend.
+OR-DiD is identical under all four reference categories.}
+\label{tab:d4a}
+\end{table}
+\begin{ins}
+
+\end{ins}
+\begin{table}[ht]
+\centering\small
+\input{../tables/d4a_byN_table.tex}
+\caption{D4a across $N$: bias and coverage of DML-DiD (post-Lasso) with a typical
+reference category, with the reference category that is atypical in both
+nuisances, and with the dummies forced in. ``Range'' is the median over
+replications of the studentised range across the four reference categories,
+in standard errors of the estimate with reference 3.}
+\label{tab:d4aN}
+\end{table}
+\begin{ins}
+
+\end{ins}
+\begin{table}[ht]
+\centering\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\input{../tables/d4b_table.tex}
+\caption{D4b: ordered categories with a jump in the middle, $R=200$,
+$\theta_0=1$. The bias of the unadjusted DiD is 0.184 in the population. Columns
+as in Table~\ref{tab:d4a}.}
+\label{tab:d4b}
+\end{table}
+\begin{ins}
+
+\paragraph{Results.} Tables~\ref{tab:d4a}--\ref{tab:d4b} confirm the priors.
+\begin{enumerate}
+\item \emph{Only the reference category that is atypical in both nuisances
+  creates bias.} At $N=4000$ its bias is 0.044, 0.117 and 0.189 for
+  $\pi_0=0.05$, 0.15 and 0.30 (MCSE 0.002), against 0.045, 0.119 and 0.195
+  predicted by Corollary~\ref{cor:reference}, and coverage is 0.77, 0.06 and
+  0.00. With references 1, 2 and 3 the bias is at most 0.002 in absolute value
+  and coverage is 0.96--0.98. A reference category that is atypical in only one
+  nuisance is harmless: this is the categorical form of the product structure
+  of Lemma~\ref{lem:bias}.
+\item \emph{The pooling formula gives the bias.} $B_1$ agrees with the bias to
+  within 0.010 in every cell, and to within 0.003 in D4a at $N=4000$. The formula
+  of Proposition~\ref{prop:pool}, evaluated at the selected columns, is a
+  population quantity that ignores the sampling error of the refit; it agrees
+  with the bias to within 0.015, with the largest gaps at $N=1000$.
+\item \emph{The bias does not shrink with $N$.} For $\pi_0=0.30$ the bias of
+  reference 0 is 0.175, 0.182 and 0.189 at $N=1000$, 2000 and 4000, while its
+  standard error falls, so coverage drops from 0.27 to 0.00
+  (Table~\ref{tab:d4aN}). At $N=4000$ the Lasso selects on average 0.4 and 0.9
+  of the 19 dummies. With $C$ fixed, the dummies of the typical categories
+  would eventually be selected, but not at these sample sizes.
+\item \emph{A bad reference category is worse than no adjustment.} With
+  reference 0 the bias exceeds that of the unadjusted DiD (0.189 against 0.179
+  for $\pi_0=0.30$, and likewise for the other shares), because the Lasso does
+  fit categories 1 and 2, whose contributions to the unadjusted bias have the
+  opposite sign.
+\item \emph{When the Lasso selects almost nothing, the coding does not matter.}
+  At $N=1000$ and $\pi_0=0.05$, every coding pools nearly all categories, all
+  codings are biased (0.024 with reference 3 and 0.038 with reference 0), and
+  the median studentised range is 0.12. A small range is therefore not evidence
+  that a specification is unbiased.
+\item \emph{Ordered categories.} In D4b, threshold coding is unbiased (bias at
+  most 0.007 in absolute value, coverage 0.94--0.95). Dummy coding stays at the
+  bias of the unadjusted DiD (0.175, 0.190 and 0.173, against 0.184), with
+  coverage 0.28, 0.03 and 0.00.
+\item \emph{Unpenalised dummies.} OR-DiD gives the same estimate under every
+  coding, to machine precision, and is unbiased, with a standard deviation 13--23\%
+  larger than that of DML-DiD with a harmless coding at $N=4000$. With the
+  dummies forced in, DML-DiD is unbiased in D4a (bias at most 0.005 in absolute
+  value, coverage 0.94--0.99), and its standard deviation is within 6\% of that
+  of DML-DiD with a harmless coding. Forcing in is not free when the categories
+  are small: in D4b at $N=1000$, where each of the 40 bins holds 25
+  observations, the standard deviation is 0.122 against 0.070 for threshold
+  coding, and the standard error understates it (SE/SD 0.88). At $N=2000$ and
+  4000 the difference is 9\% and 6\%.
+\item \emph{The range grows with $N$.} The median studentised range across the
+  four reference categories grows from 0.12, 1.75 and 2.68 at $N=1000$ to 1.47,
+  3.63 and 5.64 at $N=4000$ for the three shares, and from 2.58 to 5.06 across
+  the two codings of D4b. This is the order of magnitude that
+  \textcite{kolesar2026fragility} document in their applications, where such
+  choices move sparsity-based estimates by two standard errors or more.
+\item \emph{The refit.} Without the refit, the harmless codings are biased by
+  0.02--0.07, with coverage 0.82--0.93.
+\end{enumerate}
+
+\paragraph{What D4 shows.} The coding of a categorical covariate matters for
+DML-DiD exactly where Proposition~\ref{prop:pool} says it should: when the Lasso
+pools categories that differ in both selection and trends. The damage grows with
+the share of the pooled category, it does not fade over the range of $N$
+considered, and it can exceed the bias of making no adjustment at all. A
+researcher can avoid the choice by not penalising the dummies, which costs
+little unless the categories are very small, or, for ordered categories, by
+threshold coding. D4 uses a single categorical covariate with a known structure.
+Section~\ref{sec:emp} asks how much these choices matter in Chang's application.
+\end{ins}
+\note{(i) The forced-in files contain only \texttt{forced\_ref3} (and
+\texttt{forced\_ref0} for D4b). The invariance of the forced-in estimate to the
+reference category is therefore a consequence of Lemma~10, not something the
+tables show. If you want to show it, run one cell with a second reference; since
+your code implements ``unpenalised'' as a penalty divided by 100, the two
+estimates will agree to about four decimals, not exactly, and the text should
+say so. (ii) The three tables take most of two pages. If
+space is short, keep Tables~\ref{tab:d4aN} and~\ref{tab:d4b} in the main text
+and move Table~\ref{tab:d4a} to the appendix.}
+
+% =============================================================================
+\section{Inserts: Section 6, Chang's application}\label{sec:emp-ins}
+
+\subsection{State of the section}
+Section~6 of v13 (pp.~24--25) is still the plan from v11: an opening paragraph
+in which five citations are broken, the summary of Sequeira's paper, a paragraph
+of intentions (``I intend to conflate the covariate matrix \dots''), a note in
+Danish, and an empty heading ``Sparsity in DML''. The repository contains the
+code for the section (the last three cells of \texttt{d1.ipynb}) but no results.
+
+The text below is complete except for the numbers in \ph{orange}, which must come
+from your run. Every number that is \emph{not} orange I recomputed today from
+\texttt{Bribes\_Regression.dta} with the sample definition of your notebook; they
+need no estimation. If you run out of time, Parts~\ref{sec:emp-a}
+and~\ref{sec:emp-b} alone already make a section: they need only one estimate
+from you (DML-DiD with Chang's nine covariates), and they contain the most
+striking fact, that Chang's reported estimate equals the unadjusted
+difference in differences.
+
+Small fixes in the paragraph you keep (``Is trade liberalization a briber's
+utopia?''): ``a 8-year window'' should be ``an 8-year window''; and the paragraph
+describes the tariff and trade-flow data but not the data Chang uses, the bribe
+payments recorded for individual shipments. Add one sentence on where they come
+from and how treatment is defined (a tariff change in 2008 for the product), from
+Sequeira's paper.
+
+\subsection{Opening, and what the application can show}\label{sec:emp-a}
+\where{Replace the opening paragraph of Section~6 (p.~24).}
+\begin{ins}
+\textcite{chang2020double} illustrates DML-DiD with the study of
+\textcite{sequeira2016corruption} on tariff liberalisation and corruption. In
+this section I use his application to ask how far the choices of representation
+studied in Section~4 move the DML-DiD estimate in real data. The data are
+repeated cross-sections, so the estimator is based on the score $\psi_2$.
+\end{ins}
+
+\where{After the summary of Sequeira's paper. Replace ``Chang uses only nine
+covariates \dots'' and the Danish note.}
+\begin{ins}
+\paragraph{Chang's specification.} The outcome is $\log(1+\text{bribe})$ for a
+shipment, treatment is a change in the tariff of the product in 2008, and the
+period indicator is an indicator for shipments after 2008. Chang's replication
+code builds dummies for clearing agents and product groups, but the covariate
+matrix uses only its first nine columns: the post-2008 indicator, which is the
+period indicator $T$ itself; the 2007 tariff; the log value per ton; indicators
+for differentiated, agricultural and perishable goods and for large firms; the
+day of the week of arrival, entered as a number from 1 to 7; and an indicator
+for monitoring. With $N=1084$ complete cases, this is hardly a high-dimensional
+setting.
+
+\paragraph{What the application can show.} Three features of the data limit
+what can be learned about the ATT itself. First, Chang's DML-DiD estimate with
+Lasso first steps, $-5.222$, is practically equal to the unadjusted difference
+in differences of the four group means in his sample, $-5.228$: his first steps
+do essentially no adjustment. Second, the estimator for repeated cross-sections
+assumes that both periods are samples from the same population (RCS(i)). In the
+data, the treated share is 0.40 among the 140 shipments before 2008 and 0.13
+among the 944 after, and five of the eight clearing agents appear only after
+2008. If the propensity score depends on the period only, the score weights the
+post-period difference between treated and controls by
+$\Pr(T=1\mid D=1)/\Pr(T=1)=0.78$ and the pre-period difference by
+$\Pr(T=0\mid D=1)/\Pr(T=0)=2.46$, instead of 1 and 1, and gives $-13.3$ instead
+of $-5.2$; with no covariates at all, it gives $-18.7$. The level of the estimate
+therefore depends mainly on how the change in composition between the periods is
+handled, and Chang handles it by including the period indicator among the
+covariates. Third, 82.3\% of the outcomes are zero, and an average effect on
+$\log(1+Y)$ depends on the units in which $Y$ is measured
+\parencite{chen2024logs}. I therefore follow Chang's specification, and I use the
+application to measure how far the coding of the covariates moves the estimate
+within it, not to estimate the ATT.
+\end{ins}
+\note{``for large firms'': the variable is \texttt{dfs}; check its definition in
+Sequeira's paper before you describe it. $-5.222$ is Chang's Table~2;
+$-5.228$, $-13.3$ and $-18.7$ are my calculations (the last two are the score
+$\psi_2$ with first steps that depend on the period only, and on nothing).}
+
+\subsection{Codings and results}\label{sec:emp-b}
+\where{After the previous insert.}
+\begin{ins}
+\paragraph{Codings.} I add the product group of the shipment to Chang's nine
+covariates, as dummies. The product groups aggregate the HS 4-digit codes of the
+shipments. At the 4-digit level, 107 of the 131 codes in the sample contain only
+treated or only untreated shipments, so 4-digit dummies would violate overlap,
+and I leave the clearing agents out for the reason given above. One product
+group contains 3 shipments, all treated. Without controls, its untreated trend
+is not identified, and by the caveat to Lemma~\ref{lem:invariance} even the
+unpenalised estimate would depend on the coding, so I drop it ($N=1081$,
+13 groups). The 2007 tariff almost determines treatment: products with tariffs
+of 0 or 2.5 are never treated, and products with tariffs of 3, 4 or 10 always
+are. Dummies or polynomials in the tariff would push the estimated propensity
+score to 0 or 1, and I leave it linear. Agricultural products are almost never
+treated (2 of 522 shipments), so the comparison effectively rests on
+non-agricultural shipments.
+
+I compare three sets of specifications: Chang's nine covariates; the same with
+product-group dummies, once for each of the 13 choices of reference group; and
+the same with the dummies forced in, which by Lemma~\ref{lem:invariance} does
+not depend on the reference group. All estimates use the same \ph{100} random
+sample splits with $K=5$, and I report the median over splits with the standard
+error of \textcite[Section~3.4]{chernozhukov2018double}, which accounts for the
+variation across splits.
+
+\paragraph{Results.} Table~\ref{tab:e1} reports the estimates. With Chang's nine
+covariates, DML-DiD with post-Lasso first steps gives \ph{$\cdot$} (SE
+\ph{$\cdot$}), and without the refit \ph{$\cdot$}, against the $-5.222$ he
+reports with a cross-validated penalty. With product-group dummies, the
+propensity Lasso selects the dummies of \ph{three} groups, \ph{vegetables,
+machinery and transportation}, whose treated shares (0.67, 0.67 and 0.05) differ
+most from the others. \ph{Nine} of the other ten groups, as reference, yield the
+same pools and therefore the same estimate (\ph{$+5.2$}). Only the three groups
+whose dummies are selected change the estimate substantially when they serve as
+the reference. The default choice in applied work, the largest group, is
+transportation, which is atypical in both selection and trends
+(Table~\ref{tab:pooling}); it gives the estimate furthest from the benchmark
+with the dummies forced in (\ph{$+8.1$} against \ph{$-2.0$}), as
+Corollary~\ref{cor:reference} leads one to expect. Across reference groups, the
+estimate moves by \ph{12} points, or \ph{1.3} standard errors of the specification
+with transportation as the reference.
+
+The standard errors are large, because the 53 treated shipments from before
+2008 dominate the score, and the level of the estimate is not credible given the
+change in composition between the periods. What the exercise shows is that, in
+Chang's application, the choice of reference group alone moves DML-DiD by more
+than a standard error, that the sign of the estimate depends on it, and that the
+references that matter are the ones Proposition~\ref{prop:pool} points to.
+\end{ins}
+\note{The orange numbers are from my own run with 20 splits and an earlier
+version of the first steps. Replace all of them, and check each sentence against
+your table: in particular which dummies are selected, and whether the forced-in
+estimate is still negative. If it is not, delete ``that the sign of the estimate
+depends on it''. Table~\ref{tab:e1}: one row per specification (Chang's nine
+covariates; dummies forced in; each reference group), columns: post-Lasso
+estimate (SE), Lasso estimate (SE), number of group dummies selected in
+$\hat g$ and in $\hat\ell_2$; below it the range over reference groups in
+standard errors.}
+
+\subsection{Centring}
+The introduction (p.~2) and the list in Section~4 name three choices of
+representation: the reference category, the coding of categorical variables,
+and where a variable is centred before it is squared or interacted. The thesis
+has theory and simulations for the first two and nothing for the third. Either
+add the centring check to Section~6 or remove the third choice from the
+introduction and mark it in Section~4 as a choice you do not study. If you run
+it, the text is:
+\begin{ins}
+\paragraph{Centring.} The third choice of Section~4 is where a variable is
+centred before it is squared or interacted. I add squares and pairwise
+interactions of the continuous covariates to Chang's specification, which gives
+a dictionary of \ph{39} columns, and centre the covariates at zero, at their
+means or at their medians before forming them. The three dictionaries span the
+same space. The estimate moves by \ph{0.24} standard errors across the three
+centrings, against \ph{0.06} when only a single square is added.
+\textcite{kolesar2026fragility} find ranges above one standard error from
+centring, in dictionaries with several hundred columns. In a dictionary of the
+size that Chang's sample allows, centring is a second-order concern compared
+with the coding of the product groups.
+\end{ins}
+\note{Linear terms are exactly invariant to centring in your implementation
+(standardisation and an unpenalised intercept), so centring can only matter
+through the squares and interactions. Say this in one sentence if you include
+the paragraph.}
+
+% =============================================================================
+\section{Insert: conclusion}\label{sec:concl-ins}
+
+There is no conclusion in v13, although the introduction announces one. The
+draft below answers the two questions of the introduction in order and uses
+only results that are in the thesis. The paragraph on the application depends on
+Section~6.
+
+\where{New Section~7.}
+\begin{ins}
+\section*{7\quad Conclusion}
+
+This thesis asked how DML-DiD with Lasso first steps behaves when the sparsity
+it relies on fails, and which choices of representation make it fail.
+
+The answer to the first question follows from one identity. The bias of DML-DiD
+is the product of the errors in the propensity score and in the untreated
+outcome trend (Lemma~\ref{lem:bias}). Three consequences follow. First, the
+conditions for DML-DiD can be stated for the product: one nuisance may be far
+from sparse if the other is sparse enough, which is weaker than Chang's
+requirement on each first step, and when the product condition fails, coverage
+can go to zero (Propositions~\ref{prop:ratefail} and~\ref{prop:ratedr}). Second,
+when the Lasso selects nothing, DML-DiD is the unadjusted DiD, and in general
+the bias comes from the covariates that drive both selection and trends and that
+both first steps omit (Proposition~\ref{prop:stein}). Third, because the outcome
+nuisance is a trend, it does not matter whether the levels of the outcome are
+sparse.
+
+The answer to the second question is that the choices that matter are those
+that make the Lasso pool units that differ in \emph{both} selection and trends.
+With categorical covariates, a post-Lasso fit is constant on groups of
+categories, and the bias is the covariance of selection and trends within these
+groups (Proposition~\ref{prop:pool}). A reference category that is atypical in
+only one of the two is harmless; one that is atypical in both creates a bias in
+proportion to its share of the sample (Corollary~\ref{cor:reference}). With
+many small categories, a single atypical reference category therefore costs
+little. What matters is the size of the category, and the common default of
+using the largest category as the reference is the risky one.
+
+The simulations confirm these results and add three observations. The product
+condition describes the limit, but close to its boundary the limit is
+irrelevant: a design that satisfies it had a coverage of two thirds at every
+sample size up to 4{,}000. A bad reference category can leave more bias than no
+adjustment at all, and the bias does not fade as the sample grows, so the
+estimates under different codings move apart by up to 5.6 standard errors. And
+the refit after selection matters throughout: Chang's specification, which plugs
+in the penalised fits, had a coverage near zero in designs where post-Lasso was
+close to the nominal level. The simulations also show that the design Chang uses
+to motivate DML-DiD contains no confounding, so that the unadjusted DiD is
+unbiased there.
+
+In Chang's application, \ph{the choice of reference group for the product-group
+dummies moves the estimate by 1.3 standard errors, and the default choice, the
+largest group, gives the estimate furthest from the invariant benchmark.} The
+level of the estimate is not credible, because the composition of the sample
+changes between the periods; indeed, the estimate Chang reports equals the
+unadjusted difference in differences.
+
+For applied work, the results suggest four practices. Report DML-DiD under
+alternative codings of the controls, together with their range; a large range
+indicates that sparsity fails in at least one of them, although a small range
+does not prove that it holds. Do not penalise the dummies of a categorical
+control when overlap allows it: the estimate is then invariant to the reference
+category, at a small cost in precision unless the categories are very small.
+Refit after selection. And compare the estimate with the unadjusted DiD: if the
+two coincide, the first steps have adjusted for nothing.
+
+The analysis has limits. It covers the two-period, two-group design, and the
+theory is worked out for repeated outcomes, with the extension to repeated
+cross-sections only sketched. It concerns Lasso first steps; other learners,
+such as random forests, are not invariant to the representation either, but the
+pooling argument does not apply to them. The simulations use independent
+Gaussian covariates and a single categorical covariate. Finally, the thesis
+offers no formal test of sparsity for DML-DiD: the tests of
+\textcite{kolesar2026fragility} compare with OLS, and an analogue based on the
+range across codings, or on the comparison with unpenalised first steps, is a
+natural next step, as is the extension to staggered treatment timing.
+\end{ins}
+\note{``up to 5.6 standard errors'' is the median range in D4a at $N=4000$ and
+$\pi_0=0.30$. ``coverage near zero in designs where post-Lasso was close to the
+nominal level'' refers to D1 at $N=2000$ (0.000 against 0.946). Adjust the last
+paragraph to what you want to claim; ``random forests'' is my addition and not a
+result of the thesis, so cut it if you prefer.}
+
+% =============================================================================
+\section{Literature}\label{sec:lit}
+
+\subsection{Claims checked against the sources}
+I checked the following against the texts of the papers (Chang 2020 and its
+appendix; Chernozhukov et al.\ 2018; Kolesár et al., arXiv v5 of 13 May 2026;
+Smucler et al.\ 2019; Wüthrich and Zhu 2023; Belloni et al.\ 2012; Belloni and
+Chernozhukov 2011; Belloni, Chernozhukov and Wei 2016).
+
+\begin{center}\small
+\begin{tabular}{p{0.06\textwidth}p{0.49\textwidth}p{0.36\textwidth}}
+\toprule
+Page & Claim in v13 & Verdict\\
+\midrule
+2, 13 & Chang: valid if first steps converge faster than $N^{-1/4}$; Assumption
+  3.1 bounds each error by one $\varepsilon_N$ & Correct (his Theorem~3.1 and
+  Assumption~3.1).\\
+7--9 & Scores, Definition~1, Assumption~3, variance estimators & Agree with
+  Chang, apart from the typos in M1--M6. His Definition~3.1 has the
+  $\hat p_k$ typo described in M4.\\
+10 & Chang chooses the penalty by cross-validation and does not refit & Correct
+  (``10-fold cross validations'', p.~189).\\
+10 & Plug-in penalty ``Belloni and Chernozhukov (2011)'' & Chang cites
+  Belloni et al.\ (2012) for the rule you use. Cite that.\\
+10 & Post-Lasso: Belloni et al.\ (2014, JEP) & Wrong source. Belloni and
+  Chernozhukov (2013, \emph{Bernoulli}).\\
+11 & Kolesár et al.: definition (7) and condition (8) & Correct (their (2) and
+  (3)).\\
+11 & Kolesár et al., footnote 13: product condition under cross-fitting &
+  Correct. The footnote adds that such assumptions are ``likewise sensitive to
+  normalization choices'', which is your research question; quote it (M11).\\
+4 & Kolesár et al.\ develop two tests & Correct (a residual test and a Hausman
+  test, their Section~5).\\
+12 & Lemma~4 is the mixed bias property of Smucler et al., eq.~(3) & Correct.
+  Their term for the class is ``bilinear influence function''.\\
+12 & Assumption~5: Belloni and Chernozhukov (2011, Cor.~1); van de Geer (2008,
+  Thm 2.2, Ex.~1); Smucler et al.\ (Thm 9, Remark 7) & Not the estimators you
+  use. Replace by M10.\\
+13 & ``stricter than necessary (Smucler et al., 2019; Zimmert, 2020)'' & Smucler
+  et al.: correct. I could not check Zimmert. The closest source is
+  Chernozhukov et al.\ (2018, Remark~5.2); cite it.\\
+13--14 & Chernozhukov et al.\ (2018), eq.~(5.4), (3.7), (3.8), Theorem~3.2 &
+  Correct. Their Assumption~5.1 for the ATT already has the product-only rate
+  condition, and Remark~5.2 states $s^gs^m\ll N$. See Part~\ref{sec:obvious}.\\
+5, 15 & Wüthrich and Zhu: under-selection when coefficients are below half the
+  penalty; double under-selection & Correct.\\
+1 & Snow, 1849 & 1855 (second edition). See Part~\ref{sec:front}.\\
+22 & D2 design: Smucler et al., Appendix~D & Correct for $(0.8,1.5)$ and for the
+  idea of different decay rates; $(0.7,0.7)$ and $(2,2)$ are your own cells.\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Not checked.} The session could not reach arXiv, so I could not
+check: Rodrigues and Hatfield (2026) and the description ``graphical framework
+\dots\ equivalence between parallel trends and equi-confounding''; the NBER
+number of Goldsmith-Pinkham (2026); Hünermund et al.\ (2023); Zimmert (2020),
+described as ``builds on the same setup'' (the paper is independent of Chang's
+and contemporaneous, so ``considers the same problem'' is safer); and whether
+Callaway et al.\ (2025), Caetano and Callaway (2026) and Karim and Webb (2026)
+have been published in a journal in the meantime. Check these yourself.
+
+\subsection{References to add}
+\begin{itemize}
+\item \textcite{belloni2012sparse}: the penalty loadings (Section~5) and the rate
+  of the outcome Lasso (Assumption~5).
+\item \textcite{belloni2013least}: post-Lasso.
+\item \textcite{belloni2016post}: logit Lasso, its penalty and its rate.
+\item \textcite{belloni2014inference}: post-double-selection, the estimator
+  Kolesár et al.\ study; also polynomially decaying designs.
+\item \textcite{farrell2015robust}: the product condition for doubly robust
+  estimators.
+\item \textcite{belloni2017program} and \textcite{athey2018approximate}:
+  polynomially decaying designs (D2/D3).
+\item \textcite{hirano2003efficient}: estimated versus true propensity score
+  (D1, footnote).
+\item \textcite{sur2019modern}: bias of the unpenalised logit when $p/n$ is not
+  small (caveat to Lemma~10).
+\item \textcite{chen2024logs}: $\log(1+Y)$ (Section~6).
+\item \textcite{snow1855mode} and \textcite{angrist2009mostly}.
+\end{itemize}
+The entries are in \texttt{review/v13\_refs.bib}.
+
+\subsection{The reference list as printed (pp.~25--27)}
+\begin{itemize}
+\item ``Angrist, J. D. (n.d.)'': Angrist and Pischke (2009), Princeton University
+  Press.
+\item ``Van der Vaart, A. (n.d.). \emph{Asymptotic statistics} (Vol. 1998)'': year
+  1998, and the DOI is printed twice in the link.
+\item ``Belloni, A., \& Chernozhukov, V. (2011, September 2)'': it is a chapter in
+  \emph{Inverse Problems and High-Dimensional Estimation} (Springer, 2011);
+  cite the chapter, not the arXiv date.
+\item Smucler et al.: the title prints ``\verb|$\ell_1$|'' as raw LaTeX.
+\item Sequeira: ``southern africa'' needs capitals (protect them with braces in
+  the \texttt{.bib}).
+\item ``Van De Geer'' should be ``van de Geer''.
+\item ``(Eilers et al.)'' in Definitions~21--22 has no year and no entry; Pitman
+  (1993) is cited only for Markov and Chebyshev. Both disappear if you cut that
+  material (Part~\ref{sec:obvious}).
+\item Belloni et al.\ (2014, JEP) is no longer cited once the post-Lasso
+  reference is corrected.
+\end{itemize}
+
+% =============================================================================
+\section{Stating the obvious? What is new and what is not}\label{sec:obvious}
+
+You asked whether the thesis only states the obvious. It does not, but it
+distributes its emphasis the wrong way round: the known results are presented
+as contributions and proved at length, and the original ones are not mentioned
+in the introduction.
+
+\begin{center}\small
+\begin{tabular}{p{0.20\textwidth}p{0.36\textwidth}p{0.35\textwidth}}
+\toprule
+Result & Status & What to do\\
+\midrule
+Lemma 4 (mixed bias) & Known (Smucler et al.; implicit in Chernozhukov et al.). &
+  Keep, as now, with the attribution. Add the proof (M9).\\
+Proposition 6 (product of sparsity indices) & Follows in one line from
+  Assumption~5. Known: Chernozhukov et al.\ (2018, Remark~5.2), Farrell (2015),
+  Kolesár et al., footnote~13. & Keep, but say that it is known (M11). Delete
+  the two sentences after it (``Both parts follow directly \dots\ goes to zero
+  exactly when $s\log p/N$ does''), which restate it.\\
+Proposition 8 (rate double robustness) & Theorem~5.1 of Chernozhukov et al.\
+  applied to the change in outcomes. & Present it as that (M13). Its point is
+  that Chang's condition is stronger than needed.\\
+Proposition 7 (rate failures) & (a) is routine. (b)--(c), an explicit sequence
+  for which coverage goes to zero, I have not seen written down; Chernozhukov et
+  al.\ assert sharpness without proof. & Yours. Keep. Say that (b) is a worst
+  case and link it to D2/D3 (M12).\\
+Remark (no adjustment) & Elementary. & Keep as a remark. Its value is the
+  benchmark numbers it gives for the simulations (1.563, $0.826\,\gamma'\delta$,
+  0.184).\\
+Proposition 9 (Gaussian bias) & Yours. The ``both omit'' form is the DML-DiD
+  counterpart of Wüthrich and Zhu. & Keep and emphasise. Use the simpler
+  constants (M15).\\
+Lemma 10 (invariance) & Elementary; Kolesár et al.\ note it for OLS. & Keep,
+  short. The caveats (separation, categories without controls) are the part
+  that is not obvious and that Section~6 needs.\\
+Lemma 11, Proposition 12 & Algebra. The decomposition is never used again: no
+  table reports its three terms and the bound is never evaluated. & See below.\\
+Proposition 13, Corollary 14 (pooling, reference category) & Yours, and the most
+  original part of the thesis. & Put them in the introduction (Part~\ref{sec:front}).\\
+D1 & Partly a replication. New: Chang's design has no confounding; why Abadie's
+  estimator is biased there; the role of the refit. & Say these three things
+  explicitly (Part~\ref{sec:sims}).\\
+D2--D4 & Yours. & Part~\ref{sec:sims}.\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Proposition 12.} Two options. (i) Reduce it: state the identity in
+one display in the text, keep the observation that treated observations are
+unaffected by the propensity fit (so that a change of coding acts through the
+weights of the controls and through the outcome fit), keep the definition of
+$\mathcal R(\mathcal A)$, move Lemma~11 to the appendix, where the proof of
+Lemma~27 uses it, and drop the bound. (ii) Use it: report the three terms for
+one pair of codings in D4 or in Section~6. I recommend (i); it saves a page in
+the text and a page and a half in the appendix.
+
+\paragraph{The appendix.} The first four pages (pp.~28--32) are textbook
+material, and most of it is not used in any proof.
+\begin{itemize}
+\item Cut Definition~15 (limits), the empty Definition~16, and Definitions~20--22
+  (epsilon functions, $o$ and $O$ for functions). Nothing refers to them.
+\item Cut the proof of Chebyshev's inequality from Markov's (Definitions~17--18,
+  Lemma~19). You use Chebyshev once, for $O_k=O_P(n^{-1/2})$. Write ``by
+  Chebyshev's inequality'' there.
+\item Keep the $o_P$/$O_P$ notation (Definition~23) as a short paragraph, and
+  Definition~24 as a lemma with its source (Chernozhukov et al.\ 2018,
+  Lemma~6.1). Markov, Chebyshev and Definition~24 are results, not definitions.
+\item ``Proof of zero mean adjustment term'' is two lines. Put it in
+  Section~3.2 as one sentence: $\E[c_j\mid X]=0$ because $\E[D\mid X]=g_0$.
+\item Cut the ``Walk-through of lasso estimation'': it derives the logistic
+  log-likelihood, which is already displayed in Section~3.3.
+\item Cut the paragraph that apologises to the reader (p.~28).
+\end{itemize}
+This removes about four pages and loses nothing an examiner would look for.
+
+\paragraph{In the text.} Sentences that tell the reader nothing can go: the
+second half of the paragraph after Proposition~6; ``This is the upper bound of
+the error in estimation, and the realized error can be much smaller'' (p.~38);
+``$g_N$ is thus a legitimate probability'' (p.~38) can be one clause.
+
+% =============================================================================
+\section{Coherence}\label{sec:coherence}
+
+\begin{enumerate}
+\item \textbf{The two questions of the introduction are never answered in one
+  place.} The conclusion in Part~\ref{sec:concl-ins} does that.
+\item \textbf{The two kinds of failure.} The introduction distinguishes failure
+  (1), sparse in some basis but not in the researcher's, and failure (2), not
+  sparse in any basis. Section~4.1 is about (2) and Section~4.2 about (1); D2/D3
+  test (2) and D4 tests (1). Say so in the first sentence of each of these
+  parts. The inserts for Section~5 do it for the designs.
+\item \textbf{Section~4 opens with two other ``questions''} (p.~10: ``The first
+  question to emerge is whether sparsity applies to DML-DiD \dots\ The second
+  question to emergu \dots''). They are not the research questions, and the
+  first sentence is ungrammatical. Suggested replacement:
+\begin{ins}
+In this section, I bring the critique of \textcite{kolesar2026fragility} to the
+estimator of the previous section. DML-DiD itself does not assume sparsity: it
+needs first-step estimators that converge fast enough. Sparsity enters through
+the choice of a sparsity-based first step, such as the Lasso, and DML-DiD is
+attractive precisely because it appears to leave the choice of covariates to
+the first step. But a Lasso depends on how the covariates are written down, and
+\textcite{kolesar2026fragility} document the following choices, none of which
+affects OLS. I state all results for repeated outcomes; they carry over to
+repeated cross-sections with $\psi_2$ and $\ell_{20}$, as noted after
+Lemma~\ref{lem:bias} and at the end of the proof of Proposition~\ref{prop:ratefail}.
+\end{ins}
+\item \textbf{Repeated outcomes and repeated cross-sections.} The theory and all
+  simulations are for repeated outcomes; the application uses repeated
+  cross-sections. The last sentence of the insert above and the first paragraph
+  of Section~6 make the link.
+\item \textbf{Lasso and post-Lasso.} Section~3.3 says you refit, Assumption~5
+  speaks of ``lasso first steps'', Section~5 reports both. Write ``Lasso or
+  post-Lasso first steps'' in Assumption~5, and call the two versions the same
+  thing everywhere: ``post-Lasso'' and ``Lasso (no refit)''.
+\item \textbf{$p\asymp N$.} Section~4 assumes $p\asymp N$. D1--D3 have $p=N/2$.
+  D4 has a fixed number of categories, so asymptotically the Lasso would select
+  every relevant dummy; D4 is about what happens before that. Result~3 of D4
+  says so; keep that sentence.
+\item \textbf{Table~1 does not match the list of estimators}, and D3 is
+  undefined. Fixed by the inserts.
+\item \textbf{Headings.} ``Priors'' has a Bayesian meaning; ``Predictions'' is the
+  usual word. ``Digest'' could be ``What D1 shows''. I kept ``Priors'' in the
+  inserts to match your headings; change it if you agree.
+\item \textbf{The Remark has no number}, which is why ``as per~.'' is empty.
+\item \textbf{There is no abstract} in v13. Check what your study programme
+  requires (abstract, front page, word count).
+\end{enumerate}
+
+\paragraph{Notation used for more than one thing.}
+\begin{center}\small
+\begin{tabular}{p{0.10\textwidth}p{0.52\textwidth}p{0.30\textwidth}}
+\toprule
+Symbol & Meanings in v13 & Suggestion\\
+\midrule
+$c$, $c_j$ & adjustment terms $c_1,c_2$ in the scores (p.~7); constants
+  $c_1,c_2$ in Proposition~9; terms $c_1,c_2,c_3$ in Proposition~12; rate
+  exponent $c$ in Proposition~7; penalty constant $c=1.1$; constant fit
+  $\hat\ell\equiv c$; category $c$; coverage $c$ & $\bar c_1,\bar c_2$ in
+  Proposition~9; (I)--(III) in Proposition~12; exponents $b_g,b_\ell$; coverage
+  in words\\
+$\delta$ & trend coefficients; $\delta_g=g'-g$ (Lemma~11); $\delta_g,\delta_\ell$
+  errors (Lemma~27); a constant in the proof of Proposition~7(c) & $\Delta g$ in
+  Lemma~11; another letter in the proof\\
+$\gamma$ & propensity coefficients; penalty loadings $\gamma_{kj}$ (p.~10);
+  Chang's level $\gamma\to0$ (p.~19) & $\hat\psi_{kj}$ for the loadings\\
+$\alpha$ & level of the penalty; level of the test; decay rates
+  $\alpha_g,\alpha_\ell$ & acceptable; say ``decay rates'' each time\\
+$n$ & fold size; sample size in the Lasso (p.~19) & $M$ in the Lasso\\
+$s$ & dimension of $\theta_0$ (p.~7); sparsity index & drop the first\\
+$w$ & argument of $\Lambda$; $w(X)$ and its mean (Prop.~9); pool weight
+  (Cor.~14); $w_g,w_0$ (Lemma~27); $w_i^{(A)}$ (p.~42) & $\bar w$ for the mean;
+  $\omega$ in Corollary~14\\
+$\tilde\theta$, $\hat\theta$ & both used for the final estimator & $\tilde\theta$
+  (M5)\\
+$\lambda$ & $P(T=1)$; penalty level & acceptable, already flagged on p.~10\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% =============================================================================
+\section{Form}\label{sec:form}
+
+\paragraph{Unresolved references.} ``Lemma ??'' on p.~20 and in the caption of
+Table~1 (Lemma~4); p.~36 and p.~42 (Lemma~11); ``corollary ??'' and ``Lemma ??''
+on pp.~23--24 (Corollary~14, Lemma~10); ``as per~.'' on p.~20 (the Remark); ``6
+below'' on p.~12; ``(9)'' and the red ``repeated outcomes'' on p.~7; ``27(ii)''
+on p.~13. In the appendix, ``Lemma (4)'' and ``inequality (17)'', ``(19)'' print
+like equation numbers.
+
+\paragraph{Broken citations.} Listed in Part~\ref{sec:front}.
+
+\paragraph{Left-over notes.} ``INDSÆT HER'' (p.~17); the stray ``I'' (p.~24); the
+Danish note and the heading ``Sparsity in DML'' (p.~25); the empty
+Definition~16.
+
+\paragraph{Typos I noticed} (run a spell-check as well):
+p.~1 ``treated an untreated'';
+p.~2 ``ML method innocuous tools'', ``choices that does not'';
+p.~3 ``one nuisances'', ``chang uses'';
+p.~4 ``commmon'', ``simultanously'', ``number of covariates exceed'';
+p.~5 ``two-nusaince'', ``both panel and repeated outcomes'' (repeated outcomes
+and repeated cross-sections);
+p.~7 ``$j=\{1,2\}$'' ($j\in\{1,2\}$);
+p.~8 ``nuissance'';
+p.~9 ``of of'';
+p.~10 ``of he nuisance'', ``I my thesis'', ``the size of the set where'';
+p.~11 ``Since DML-DiD that allows'', ``a sparsity-based estimators'',
+``emergu'';
+p.~13 ``suffiecient'';
+p.~14 ``uandjusted'', ``sparse in large'';
+p.~15 ``that escape both fits omit'';
+p.~16 ``Anecdotically'', ``$\hat g_K$'';
+p.~18 ``were selection'' (where), ``If it atypical'', ``intutive'', ``leave the
+coefficients'', ``neglectible'', ``standard erro'', ``treshhold'';
+p.~19 ``lasso ust'', ``samling'', ``Undjusted'';
+p.~20 ``be follow'', ``maintaining letting'';
+p.~22 ``requieres'', ``how DML-DiD response'';
+p.~23 ``attatched'', ``suffiecient'', ``the how'';
+p.~24 ``selct'';
+p.~25 ``a 8-year'', ``commmon'', ``used create'', ``conflate the covariate
+matrix'' (you mean ``expand''), and ``Since squares and interactions of dummy
+variables are degenerate, I will include them'' (you mean ``exclude'');
+appendix: ``supress'', ``Walk-trough'', ``estimation of of'', ``asusmption'',
+``$q_pX_i$'', ``th whole'', ``$\hat\lambda_K$''.
+Also write ``Lasso'' with a capital throughout (it is an acronym), and choose
+between British and American spelling (``categorise''/``categorize'',
+``centred''/``centered'' both occur).
+
+% =============================================================================
+\section{Questions for you}\label{sec:questions}
+
+\begin{enumerate}
+\item \textbf{Section~6.} I see the code in the notebook but no result files.
+  Have you run it? If not: do you want to run the full version (about
+  $15\times100$ cross-fits on $N=1081$), or the short version
+  (Parts~\ref{sec:emp-a} and~\ref{sec:emp-b} with only the estimate for
+  Chang's nine covariates and two or three reference groups)? The conclusion and
+  contribution (c) depend on this.
+\item \textbf{Centring.} Include the check in Section~6, or drop centring as a
+  choice you study?
+\item \textbf{D2/D3.} Main text with both tables, or one table in the text and
+  the rest in the appendix? Is there a page limit?
+\item \textbf{Titles.} Has your supervisor agreed to the informal title and
+  section titles?
+\item \textbf{Forced-in dummies.} Do you want to show the invariance to the
+  reference category numerically (one extra run), or rely on Lemma~10?
+\item \textbf{Deadline.} If you tell me the date, I can order the remaining work
+  by what an examiner will weigh most.
+\end{enumerate}
+
+\printbibliography[title={References used in the inserts}]
+\end{document}

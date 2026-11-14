@@ -1,0 +1,34 @@
+\begin{tabular}{l rrrrr rr rr rr}
+\toprule
+ & \multicolumn{5}{c}{Post-Lasso} & & & \multicolumn{2}{c}{No refit} & \multicolumn{2}{c}{Selected} \\
+\cmidrule(lr){2-6} \cmidrule(lr){9-10} \cmidrule(lr){11-12}
+ & Bias & MCSE & SD & SE/SD & Cov. & $B_1$ & Pool & Bias & Cov. & $\hat g$ & $\hat\ell$ \\
+\midrule
+\multicolumn{12}{l}{\emph{$\pi_0=0.05$: unadjusted bias 0.039, Corollary for reference 0: 0.045}} \\
+\quad Reference 3 (typical) & $-$0.002 & 0.002 & 0.031 & 1.07 & 0.97 & $-$0.001 & 0.000 & 0.025 & 0.91 & 1.9 & 1.9 \\
+\quad Reference 1 (selection only) & $-$0.002 & 0.002 & 0.030 & 1.08 & 0.96 & $-$0.001 & 0.000 & 0.024 & 0.92 & 0.9 & 1.9 \\
+\quad Reference 2 (trend only) & $-$0.001 & 0.002 & 0.031 & 1.08 & 0.97 & $-$0.001 & 0.000 & 0.024 & 0.93 & 1.9 & 0.9 \\
+\quad Reference 0 (both) & 0.044 & 0.002 & 0.031 & 1.06 & 0.77 & 0.046 & 0.045 & 0.041 & 0.76 & 0.9 & 1.0 \\
+\quad Dummies forced in & $-$0.002 & 0.002 & 0.031 & 1.07 & 0.97 & 0.000 & -- & $-$0.002 & 0.97 & all & all \\
+\quad OR-DiD & $-$0.001 & 0.002 & 0.035 & -- & -- & -- & -- & -- & -- & -- & -- \\
+\quad Unadjusted DiD & 0.039 & 0.002 & 0.031 & 1.07 & 0.81 & -- & -- & -- & -- & -- & -- \\
+\addlinespace
+\multicolumn{12}{l}{\emph{$\pi_0=0.15$: unadjusted bias 0.108, Corollary for reference 0: 0.119}} \\
+\quad Reference 3 (typical) & $-$0.001 & 0.002 & 0.032 & 1.06 & 0.98 & 0.000 & 0.000 & 0.023 & 0.90 & 1.8 & 2.0 \\
+\quad Reference 1 (selection only) & $-$0.001 & 0.002 & 0.031 & 1.07 & 0.97 & 0.000 & 0.000 & 0.023 & 0.90 & 1.0 & 2.0 \\
+\quad Reference 2 (trend only) & $-$0.001 & 0.002 & 0.032 & 1.05 & 0.97 & 0.000 & 0.000 & 0.022 & 0.91 & 1.8 & 1.0 \\
+\quad Reference 0 (both) & 0.117 & 0.002 & 0.033 & 1.04 & 0.06 & 0.115 & 0.118 & 0.110 & 0.09 & 0.7 & 1.0 \\
+\quad Dummies forced in & $-$0.002 & 0.002 & 0.032 & 1.05 & 0.99 & 0.000 & -- & $-$0.002 & 0.99 & all & all \\
+\quad OR-DiD & 0.000 & 0.003 & 0.037 & -- & -- & -- & -- & -- & -- & -- & -- \\
+\quad Unadjusted DiD & 0.107 & 0.002 & 0.032 & 1.05 & 0.10 & -- & -- & -- & -- & -- & -- \\
+\addlinespace
+\multicolumn{12}{l}{\emph{$\pi_0=0.30$: unadjusted bias 0.180, Corollary for reference 0: 0.195}} \\
+\quad Reference 3 (typical) & 0.000 & 0.002 & 0.031 & 1.08 & 0.97 & 0.000 & 0.000 & 0.022 & 0.93 & 1.7 & 2.0 \\
+\quad Reference 1 (selection only) & 0.000 & 0.002 & 0.030 & 1.11 & 0.98 & 0.000 & 0.000 & 0.022 & 0.93 & 1.0 & 2.0 \\
+\quad Reference 2 (trend only) & 0.000 & 0.002 & 0.032 & 1.09 & 0.97 & 0.000 & $-$0.001 & 0.021 & 0.92 & 1.7 & 1.0 \\
+\quad Reference 0 (both) & 0.189 & 0.002 & 0.033 & 1.04 & 0.00 & 0.190 & 0.190 & 0.181 & 0.00 & 0.4 & 0.9 \\
+\quad Dummies forced in & 0.000 & 0.002 & 0.032 & 1.09 & 0.97 & 0.000 & -- & 0.000 & 0.96 & all & all \\
+\quad OR-DiD & 0.001 & 0.003 & 0.038 & -- & -- & -- & -- & -- & -- & -- & -- \\
+\quad Unadjusted DiD & 0.179 & 0.002 & 0.033 & 1.04 & 0.00 & -- & -- & -- & -- & -- & -- \\
+\bottomrule
+\end{tabular}

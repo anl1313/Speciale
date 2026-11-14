@@ -1,0 +1,28 @@
+\begin{tabular}{l rrrrr rr rr rr}
+\toprule
+ & \multicolumn{5}{c}{Post-Lasso} & & & \multicolumn{2}{c}{No refit} & \multicolumn{2}{c}{Selected} \\
+\cmidrule(lr){2-6} \cmidrule(lr){9-10} \cmidrule(lr){11-12}
+ & Bias & MCSE & SD & SE/SD & Cov. & $B_1$ & Pool & Bias & Cov. & $\hat g$ & $\hat\ell$ \\
+\midrule
+\multicolumn{12}{l}{\emph{$N=1000$: median studentised range 2.58}} \\
+\quad Thresholds & $-$0.005 & 0.005 & 0.070 & 1.00 & 0.94 & 0.001 & 0.000 & 0.056 & 0.85 & 1.7 & 1.7 \\
+\quad Dummies, reference 0 & 0.175 & 0.005 & 0.069 & 0.99 & 0.28 & 0.183 & 0.183 & 0.176 & 0.28 & 0.0 & 0.0 \\
+\quad Dummies forced in & $-$0.014 & 0.009 & 0.122 & 0.88 & 0.96 & $-$0.009 & -- & $-$0.008 & 0.93 & all & all \\
+\quad OR-DiD & $-$0.002 & 0.006 & 0.079 & -- & -- & -- & -- & -- & -- & -- & -- \\
+\quad Unadjusted DiD & 0.175 & 0.005 & 0.069 & 0.98 & 0.26 & -- & -- & -- & -- & -- & -- \\
+\addlinespace
+\multicolumn{12}{l}{\emph{$N=2000$: median studentised range 3.70}} \\
+\quad Thresholds & 0.007 & 0.003 & 0.047 & 1.04 & 0.95 & 0.001 & 0.000 & 0.042 & 0.87 & 2.0 & 1.9 \\
+\quad Dummies, reference 0 & 0.190 & 0.003 & 0.045 & 1.10 & 0.03 & 0.180 & 0.183 & 0.192 & 0.01 & 0.1 & 0.0 \\
+\quad Dummies forced in & 0.006 & 0.004 & 0.051 & 1.11 & 0.98 & $-$0.001 & -- & 0.006 & 0.97 & all & all \\
+\quad OR-DiD & 0.006 & 0.004 & 0.053 & -- & -- & -- & -- & -- & -- & -- & -- \\
+\quad Unadjusted DiD & 0.192 & 0.003 & 0.043 & 1.11 & 0.01 & -- & -- & -- & -- & -- & -- \\
+\addlinespace
+\multicolumn{12}{l}{\emph{$N=4000$: median studentised range 5.06}} \\
+\quad Thresholds & 0.000 & 0.002 & 0.033 & 1.03 & 0.95 & 0.000 & 0.000 & 0.019 & 0.93 & 1.9 & 1.9 \\
+\quad Dummies, reference 0 & 0.173 & 0.002 & 0.032 & 1.07 & 0.00 & 0.176 & 0.181 & 0.180 & 0.00 & 0.6 & 0.1 \\
+\quad Dummies forced in & 0.000 & 0.002 & 0.035 & 1.04 & 0.95 & 0.000 & -- & 0.000 & 0.94 & all & all \\
+\quad OR-DiD & $-$0.001 & 0.003 & 0.038 & -- & -- & -- & -- & -- & -- & -- & -- \\
+\quad Unadjusted DiD & 0.181 & 0.002 & 0.032 & 1.07 & 0.00 & -- & -- & -- & -- & -- & -- \\
+\bottomrule
+\end{tabular}
