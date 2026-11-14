@@ -394,22 +394,44 @@ $1/\{\lambda_0(1-\lambda_0)\}$.
 Lemma~4 in the appendix of v13. Here is one; put it before Lemma~25.}
 \begin{ins}
 \begin{proof}[Proof of Lemma~\ref{lem:bias}]
-Write $\Delta Y=Y(1)-Y(0)$ and $m_1(X)=\E[\Delta Y\mid X,D=1]$. Conditional on
-$X$, a unit is treated with probability $g_0$, and $(D-g)/(1-g)$ equals $1$ for a
-treated and $-g/(1-g)$ for an untreated unit. Hence
+Write $\Delta Y=Y(1)-Y(0)$ and $m_1(X)=\E[\Delta Y\mid X,D=1]$, the trend of the
+treated, so that $\ell_{10}(X)=\E[\Delta Y\mid X,D=0]$ is the trend of the
+untreated. The two terms of $\psi_1$ combine into
+$\psi_1(W,\theta,p_0,g,\ell)=(\Delta Y-\ell)(D-g)/\{p_0(1-g)\}-\theta$, so
+\begin{equation*}
+  p_0\,\E[\psi_1(W,\theta_0,p_0,g,\ell)]
+  =\underbrace{\E\Big[(\Delta Y-\ell)\frac{D-g}{1-g}\Big]}_{\text{(a)}}-\underbrace{p_0\theta_0}_{\text{(b)}} .
+\end{equation*}
+\emph{Term (a).} Conditional on $X$, a unit is treated with probability $g_0$.
+For a treated unit, $(D-g)/(1-g)=1$ and $\E[\Delta Y-\ell\mid X,D=1]=m_1-\ell$.
+For an untreated unit, $(D-g)/(1-g)=-g/(1-g)$ and
+$\E[\Delta Y-\ell\mid X,D=0]=\ell_{10}-\ell$. Hence
 \[
   \E\Big[(\Delta Y-\ell)\frac{D-g}{1-g}\,\Big|\,X\Big]
   =g_0(m_1-\ell)-(1-g_0)\frac{g}{1-g}(\ell_{10}-\ell).
 \]
-At $(g,\ell)=(g_0,\ell_{10})$ this is $g_0(m_1-\ell_{10})$, and
-$\theta_0=\E[g_0(m_1-\ell_{10})]/p_0$. Subtracting,
+\emph{Term (b).} By RO(i) and RO(iii), $m_1-\ell_{10}=\E[Y^1(1)-Y^0(1)\mid X,D=1]$,
+the treatment effect on the treated at $X$. Since
+$\E[f(X)\mid D=1]=\E[Df(X)]/p_0=\E[g_0f(X)]/p_0$ for any $f$,
+\[
+  p_0\theta_0=p_0\,\E[m_1-\ell_{10}\mid D=1]=\E\big[g_0(m_1-\ell_{10})\big].
+\]
+This is the expectation of the display for term (a) at the true nuisances,
+$(g,\ell)=(g_0,\ell_{10})$, where the second part vanishes; equivalently,
+$\E[\psi_1(W,\theta_0,p_0,g_0,\ell_{10})]=0$.
+
+\emph{Subtracting (b) from (a).} Both terms are now expectations of functions of
+$X$. In the difference, the unknown trend of the treated cancels,
+$g_0(m_1-\ell)-g_0(m_1-\ell_{10})=g_0(\ell_{10}-\ell)$, so
 \[
   p_0\,\E[\psi_1(W,\theta_0,p_0,g,\ell)]
   =\E\Big[(\ell_{10}-\ell)\Big(g_0-\frac{(1-g_0)g}{1-g}\Big)\Big]
   =\E\Big[\frac{(\ell_{10}-\ell)(g_0-g)}{1-g}\Big],
 \]
-which is the identity. The bound follows from $1-g\ge\kappa'$ and the
-Cauchy--Schwarz inequality. For repeated cross-sections, replace $\Delta Y$ by
+where the last step uses $g_0(1-g)-(1-g_0)g=g_0-g$. Since
+$(\ell_{10}-\ell)(g_0-g)=(\ell-\ell_{10})(g-g_0)$, dividing by $p_0$ gives the
+identity. The bound follows from $1-g\ge\kappa'$ and the Cauchy--Schwarz
+inequality. For repeated cross-sections, replace $\Delta Y$ by
 $(T-\lambda_0)Y/\{\lambda_0(1-\lambda_0)\}$ and $\ell$ by
 $\ell/\{\lambda_0(1-\lambda_0)\}$.
 \end{proof}
